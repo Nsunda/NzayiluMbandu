@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block nome_modulo %} Criação de Termos {% endblock %}
+
+{% block titulo_pagina %} Bem vindo ao Módulo de Criação de Termos {% endblock %}
+
+{% block ContentPlaceHolder %}
+
+
+	
+	Termo Solicitado: {{ solicitacao.termopt }}
+
+	<br />
+
+	Conceito: {{ solicitacao.conceitopt }}
+
+
+{% endblock %}

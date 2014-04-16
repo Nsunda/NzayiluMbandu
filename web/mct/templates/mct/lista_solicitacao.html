@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block selectNavbar %}
+	<li><a href="#">Início</a></li>
+	<li><a href="/dicionario">Dicionario</a></li>
+	<li class="active"><a href="/termos">+Termos</a></li>
+	<li><a href="/ensino">Ensino</a></li>
+{% endblock %}
+
+{% block slectSidebar %}
+  <li class="active"><a href="{% url 'lista_solicitacao' %}">Solicitações</a></li>
+  <li><a href="{% url 'lista_termo' %}">Propostas</a></li>
+  <li><a href="{% url 'lista_certificacao' %}">Certificados</a></li>
+{% endblock %}
+
+{% block ContentPlaceHolder %}
+
+	<table class="table">
+		<tr>
+		    <th>Termo Português</th>
+		    <th>Solicitante</th>
+		    <th>Data Solicitação</th>
+		    <th>Estado</th>
+		    <th>Detalhes</th>
+		    <th>Editar</th>
+		    <th>Propor termo</th>
+	  	</tr>
+
+  		{% for solicitacao in lista_solicitacao %}
+  		<tr>
+		    <td> {{ solicitacao.termopt }} </td>
+		    <td> {{ solicitacao.solicitante }} </td>
+		    <td> {{ solicitacao.data_solicita }} </td>
+		    <td> {{ solicitacao.status_certificado }} </td>
+		    <th> <!-- detalhes -->
+		    	<a type="button" class="btn btn-small btn-info" href="{% url 'detalhe_solicitacao' solicitacao.id %}">
+                    <span class="glyphicon glyphicon-th-list"></span>
+	            </a>
+	        </th>
+		    <th> <!-- editar -->
+		    	<a type="button" class="btn btn-small btn-primary" href="{% url 'editar_solicitacao' solicitacao.id %}">
+					<span class="glyphicon glyphicon-pencil"></span>
+				</a>
+		    </th>
+		    <th>
+		    	<a class="btn btn-success" type="button" href="{% url 'criar_termo' solicitacao_id=solicitacao.id %}">Propor Termo</a>
+		    </th>
+	  	</tr>
+  		{% endfor %}
+
+	</table>
+
+{% endblock %}

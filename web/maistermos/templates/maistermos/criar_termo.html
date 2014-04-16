@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+
+{% load widget_tweaks %}
+{% load staticfiles %}
+
+{% block stylesheets %}
+		{{ block.super }}
+		<link rel="stylesheet" type="text/css" href="{% static "css/mct/mct_create.css" %}">
+		
+{% endblock stylesheets %}
+
+
+{% block title %}
+	{% if form.instance.pk == None %}
+		Criar Termo
+	{% else %}
+		Editar Termo
+	{% endif %}
+{% endblock title %}
+
+{% block nome_modulo %} Módulo de Criação de Termo {% endblock %}
+
+
+
+{% block SelectMenu %}
+<div class="navbar-collapse collapse">
+  <ul class="nav navbar-nav">
+    <li class="active"><a href="solicitacao">Solicitacoes</a></li>
+    <li class="active"><a href="termos">Termos</a></li>
+    <li class="active"><a href="certificacao">Certificacao</a></li>
+  </ul>
+</div>
+{% endblock %}
+
+
+{% block titulo_pagina %} Adicionar Termos {% endblock %}
+
+{% block ContentPlaceHolder %}
+
+<hr>
+
+<form method="POST">
+	{% csrf_token %}
+
+		<div class="form-line error-line">
+				<div class="form-element">
+					<ul class="form-errors">
+						{% for error in form.solicitacao.errors %}
+							<li>{{error}}</li>
+						{% endfor %}
+					</ul>
+				</div>
+				<div class="form-element">
+					<ul class="form-errors">
+						{% for error in form.termopt.errors %}
+							<li>{{error}}</li>
+						{% endfor %}
+					</ul>
+				</div>
+			</div>
+
+			<div class="form-line">
+				<div class="form-element">
+					<p class="form-label">{{form.solicitacao.label}}</p>
+					{{form.solicitacao|add_class:"form-input"}}	
+				</div>
+				<div class="form-element">
+					<p class="form-label">{{form.termopt.label}}</p>
+					{{form.termopt|add_class:"form-input"}}
+				</div>
+			</div>
+			
+			<div class="form-line error-line">
+				<div class="form-element">
+					<ul class="form-errors">
+						{% for error in form.conceitopt.errors %}
+							<li>{{error}}</li>
+						{% endfor %}
+					</ul>
+				</div>
+				<div class="form-element">
+					<ul class="form-errors">
+						{% for error in form.termokk.errors %}
+							<li>{{error}}</li>
+						{% endfor %}
+					</ul>
+				</div>
+				<div class="form-element">
+					<ul class="form-errors">
+						{% for error in form.conceitokk.errors %}
+							<li>{{error}}</li>
+						{% endfor %}
+					</ul>
+				</div>
+			</div>
+
+			<div class="form-line">
+				<div class="form-element">
+					<p class="form-label">{{form.conceitopt.label}}</p>
+					{{form.conceitopt|add_class:"form-input"}}
+				</div>
+				<div class="form-element">
+					<p class="form-label">{{form.termokk.label}}</p>
+					{{form.termokk|add_class:"form-input"}}
+				</div>
+				<div class="form-element">
+					<p class="form-label">{{form.conceitokk.label}}</p>
+					{{form.conceitokk|add_class:"form-input"}}
+				</div>
+			</div>
+
+
+	<br />
+
+	<div class="form-btn-holder">
+		{% if form.instance.pk == None %}
+			<!-- botão criar -->
+			<input class="btn btn-lg btn-success form-btn" type="submit" value="Criar">
+		{% else %}
+			<!-- botão editar -->
+			<input class="btn btn-lg btn-success form-btn" type="submit" value="Guardar">
+		{% endif %}
+	</div>	
+
+</form>
+
+
+{% endblock %}

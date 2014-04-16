@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% load widget_tweaks %}
+{% load staticfiles %}
+
+{% block selectNavbar %}
+	<li><a href="#">Início</a></li>
+	<li><a href="/dicionario">Dicionario</a></li>
+	<li class="active"><a href="/termos">+Termos</a></li>
+	<li><a href="/ensino">Ensino</a></li>
+{% endblock %}
+
+{% block slectSidebar %}
+  <li class="active"><a href="{% url 'lista_solicitacao' %}">Solicitações</a></li>
+  <li><a href="{% url 'lista_termo' %}">Propostas</a></li>
+  <li><a href="{% url 'lista_certificacao' %}">Certificados</a></li>
+{% endblock %}
+
+{% block ContentPlaceHolder %}
+
+<form method="POST">
+{% csrf_token %}
+	<div class="form-line error-line">
+		<div class="form-element">
+			<ul class="form-errors">
+				{% for error in form.termopt.errors %}
+					<li>{{error}}</li>
+				{% endfor %}
+			</ul>
+		</div>
+		<div class="form-element">
+			<ul class="form-errors">
+				{% for error in form.conceitopt.errors %}
+					<li>{{error}}</li>
+				{% endfor %}
+			</ul>
+		</div>
+		<div class="form-element">
+			<ul class="form-errors">
+				{% for error in form.sugeretermokk.errors %}
+					<li>{{error}}</li>
+				{% endfor %}
+			</ul>
+		</div>
+		<div class="form-element">
+			<ul class="form-errors">
+				{% for error in form.sugereconceitokk.errors %}
+					<li>{{error}}</li>
+				{% endfor %}
+			</ul>
+		</div>
+	</div>
+
+	<div class="form-line">
+		<div class="form-element">
+			<p class="form-label">{{form.termopt.label}}</p>
+			{{form.termopt|add_class:"form-input"}}	
+		</div>
+		<div class="form-element">
+			<p class="form-label">{{form.conceitopt.label}}</p>
+			{{form.conceitopt|add_class:"form-input"}}
+		</div>
+	</div>
+	<div class="form-line">
+		<div class="form-element">
+			<p class="form-label">{{form.sugeretermokk.label}}</p>
+			{{form.termokk|add_class:"form-input"}}
+		</div>
+		<div class="form-element">
+			<p class="form-label">{{form.sugereconceitokk.label}}</p>
+			{{form.conceitokk|add_class:"form-input"}}
+		</div>
+	</div>
+
+	<br />
+
+	<div class="form-btn-holder">
+		{% if form.instance.pk == None %}
+			<!-- botão criar -->
+			<input class="btn btn-lg btn-success form-btn" type="submit" value="Criar">
+		{% else %}
+			<!-- botão editar -->
+			<input class="btn btn-lg btn-success form-btn" type="submit" value="Salvar">
+		{% endif %}
+	</div>		
+
+</form>
+
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block selectNavbar %}
+	<li><a href="#">Início</a></li>
+	<li><a href="/dicionario/">Dicionario</a></li>
+	<li class="active"><a href="/maistermos/">+Termos</a></li>
+	<li><a href="/ensino/">Ensino</a></li>
+{% endblock %}
+
+{% block slectSidebar %}
+  <li class="active"><a href="{% url 'lista_solicitacao' %}">Solicitações</a></li>
+  <li><a href="{% url 'lista_termo' %}">Propostas</a></li>
+  <li><a href="{% url 'lista_certificacao' %}">Certificados</a></li>
+{% endblock %}
+
+{% block ContentPlaceHolder %}
+
+<div class="panel panel-default">
+  <div class="panel-body">
+    	<!-- detalhes: Aparece para todos os perfis professores, linguistas e certificadores -->
+    	<a type="button" class="btn btn-sm btn-info" href="{% url 'lista_solicitacao' %}" 
+    	data-toggle="tooltip" data-placement="top" title="Detalhes">
+            Voltar para a lista <span class="glyphicon glyphicon-list"></span>
+        </a>
+		<!-- editar: Aparece só para o solicitante -->
+    	<a type="button" class="btn btn-sm btn-primary" href="{% url 'editar_solicitacao' object.id %}"
+    	data-toggle="tooltip" data-placement="top" title="Editar">
+			Editar os detalhes <span class="glyphicon glyphicon-pencil"></span>
+		</a>
+		<!-- propor: Aparece só para linguistas -->
+    	<a type="button" class="btn btn-sm btn-success" href="{% url 'criar_termo' object.id %}"
+    	data-toggle="tooltip" data-placement="top" title="Propor termo">
+			Propor novo termo <span class="glyphicon glyphicon-plus-sign"></span>
+		</a>
+  </div>
+</div>
+
+
+	<b>Termo solicitado em português:</b> {{ object.termopt }}<br />
+	<b>Conceito português:</b> {{ object.conceitopt }}<br />
+	<b>Sugestão de termo em kikongo:</b> {{ object.sugeretermokk }}<br />
+	<b>Sugestão tradução conceito:</b> {{ object.sugereconceitokk }}<br />
+	<b>Solicitante:</b> {{ object.solicitante }}<br />
+	<b>Data de solicitação:</b> {{ object.data_solicita }}<br />
+	<b>Respondente:</b> {{ object.respondente }}<br />
+	<b>Data inicio atendimento:</b> {{ object.data_inicio_atendim }}<br />
+	<b>Data fim atendimento:</b> {{ object.data_fim_atendim }}<br />
+	<b>Estado:</b> {{ object.estado }}<br />
+
+{% endblock %}
