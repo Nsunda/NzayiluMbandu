@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% load widget_tweaks %}
+{% load staticfiles %}
+{% load extra_order %}
+
+
+{% block slectSidebar %}
+		{% if perms.maistermos %}
+	    <a href="{% url 'cadastra_termopt' %}" class="list-group-item" >
+		  <span class="glyphicon glyphicon-plus"></span> Cadastrar termos PT
+		</a>
+		<a href="{% url 'cria_solicitacao' %}" class="list-group-item active" >
+		  <span class="glyphicon glyphicon-bookmark"></span> Solicitar criação termos LN
+		</a>
+		<a href="{% url 'lista_termopt' %}" class="list-group-item" >
+		  <span class="glyphicon glyphicon-cog"></span> Gerir termos PT
+		</a>
+		<a href="{% url 'lista_solicitacao' %}" class="list-group-item" >
+		  <span class="glyphicon glyphicon-cog"></span> Gerir solicitações
+		</a>
+		<a href="{% url 'lista_termolx' %}" class="list-group-item" >
+		  <span class="glyphicon glyphicon-cog"></span> Gerir termos LN
+		</a>
+		<a href="{% url 'lista_certificado' %}" class="list-group-item" >
+		  <span class="glyphicon glyphicon-cog"></span> Gerir certificados
+		</a>
+		{% endif %}
+
+{% endblock %}
+
+{% block ContentPlaceHolder %}
+
+	<!-- Barra de busca -->
+	<div class="well well-sm">
+		<form method="POST" action="" class="horizontal" >
+		{%csrf_token%}
+			<div class="input-group">
+				<input name="q_termopt" type="text" placeholder="Buscar termo em português" class="form-control">
+				<div class="input-group-btn">
+				    <button type="submit" class="btn btn-default btn-sm" style="height:34px;">
+						<span class="glyphicon glyphicon-search"></span>
+					</button>
+			  	</div>
+			</div>
+		</form>
+	</div>
+	
+	{% if messages %}
+		{% for message in messages %}
+		<div {% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>
+	        <a href="#" class="close" data-dismiss="alert">&times;</a>
+		    <p>{{ message }}</p>
+	    </div>
+	    {% endfor %}
+	{% endif %}
+
+	<div class="panel panel-default">
+		<div class="panel-heading">
+    		<h3 class="panel-title">
+    			RESULTADO DA BUSCA
+    		</h3>
+  		</div>
+		<div class="panel-body">
+			{% if termopt_list %}
+			{% for termopt in termopt_list %}
+			<table class="table">
+				<tr>
+				    <th>{{termopt.termo}}:</th>
+				    <td>{{termopt.conceito}}</td>
+			  	</tr>
+		  	</table>
+			{% endfor %}
+		</div>
+
+		<div class="panel-heading">
+        	SOLICITAÇÕES ASSOCIADOS 
+        </div>
+        <div class="panel-body">
+        	<a type="button" class="btn btn-sm btn-success pull-left" href="{% url 'cadastra_solicitacao' termopt.id %}" 
+	    	data-toggle="tooltip" data-placement="top" title="Solicitar criação termo">
+	            Solicitar criação de termo <span class="glyphicon glyphicon-bookmark"></span>
+	        </a></br></br>
+			{% if solicitacoes_list_query %}
+			<table class="table">
+				<thead>
+					<tr>
+					    <th>Lingua</th>
+					    <th>Data 1ra solicitação</th>
+					    <th>Solicitantes</th>
+					    <th>Estado</th>
+					    <th>Analisando</th>
+					    <th></th>
+				  	</tr>
+			   	</thead>
+			   	<tbody>
+			  		{% for solicitacao in solicitacoes_list_query %}
+			  		<tr>
+					    <td> {{solicitacao.linguax}} </td>
+					    <td> {{solicitacao.data_insercao|date:"M d, Y"}} </td>
+					    <td> {{solicitacao.usuario_solicitantes.count}} </td>
+					    <td> {{solicitacao.estado}} </td>
+					    <td> {{solicitacao.usuario_em_analise.count}} </td>
+					    <td><!-- detalhes: Aparece para todos os perfis professores, linguistas e certificadores -->
+					    	<a type="button" class="btn btn-xs btn-info" href="{% url 'detalhe_solicitacao' solicitacao.id %}" 
+					    	data-toggle="tooltip" data-placement="top" title="Detalhes">
+			                    Detalhe <span class="glyphicon glyphicon-th-list"></span>
+				            </a>
+					    </td>
+				  	</tr>
+			  		{% endfor %} 
+		  		</tbody>
+			</table>
+				<!-- PAGINAÇÃO -->
+			    <ul class="pagination">
+			    {% if solicitacoes_list_query.has_previous %}
+			        <li><a href="?page={{ solicitacoes_list_query.previous_page_number }}{{ getvars }}{{ hashtag }}" class="prev">&lsaquo;&lsaquo;</a></li>
+			    {% else %}
+			        <li class="disabled prev"><a href="#">&lsaquo;&lsaquo;</a></li>
+			    {% endif %}
+
+			    {% for i in paginator_solicitacoes.page_range %}
+		            <li {% if solicitacoes_list_query.number == i %} class="active" {% endif %}><a href="?page={{i}}">{{i}}</a></li>
+		        {% endfor %}
+
+			    {% if solicitacoes_list_query.has_next %}
+			        <li><a href="?page={{ solicitacoes_list_query.next_page_number }}{{ getvars }}{{ hashtag }}" class="next">&rsaquo;&rsaquo;</a></li>
+			    {% else %}
+			        <li class="disabled next"><a href="#">&rsaquo;&rsaquo;</a></li>
+			    {% endif %}
+			    </ul>
+			{% else %}
+		  		<p> Não existem solicitações associados ao termo </p>
+	  		{% endif %}
+	  	</div>
+	  	{% else %}
+	  	<div class="panel-body">
+			<p>Busca sem resultados. </p>
+			<p><strong>Se deseja cadastrar termos em português e depois solicitar a criação de um novo termo nas linguas nacionais clicke <a href="{% url 'cadastra_termopt' %}">aqui</a></strong></p>
+		</div>
+		{% endif %}
+
+	</div>
+{% endblock %}
+

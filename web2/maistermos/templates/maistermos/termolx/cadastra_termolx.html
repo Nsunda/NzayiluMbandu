@@ -1,0 +1,278 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% load widget_tweaks %}
+{% load staticfiles %}
+{% load extra_order %}
+
+{% block slectSidebar %}
+	{% if perms.maistermos %}
+	    <a href="{% url 'cadastra_termopt' %}" class="list-group-item" >
+		  <span class="glyphicon glyphicon-plus"></span> Cadastrar termos PT
+		</a>
+		<a href="{% url 'cria_solicitacao' %}" class="list-group-item" >
+		  <span class="glyphicon glyphicon-bookmark"></span> Solicitar criação termos LN
+		</a>
+		<a href="{% url 'lista_termopt' %}" class="list-group-item" >
+		  <span class="glyphicon glyphicon-cog"></span> Gerir termos PT
+		</a>
+		<a href="{% url 'lista_solicitacao' %}" class="list-group-item" >
+		  <span class="glyphicon glyphicon-cog"></span> Gerir solicitações
+		</a>
+		<a href="{% url 'lista_termolx' %}" class="list-group-item active" >
+		  <span class="glyphicon glyphicon-cog"></span> Gerir termos LN
+		</a>
+		<a href="{% url 'lista_certificado' %}" class="list-group-item" >
+		  <span class="glyphicon glyphicon-cog"></span> Gerir certificados
+		</a>
+	{% endif %}
+{% endblock %}
+
+{% block ContentPlaceHolder %}
+
+	<!-- Menu ações dentro do modulo -->
+	<div class="btn-group btn-group-centered" style="margin-bottom:6px">
+	  {% if termolx_form.instance.pk != None %}
+	  <div class="btn-group">
+	    <a type="button" class="btn btn-md btn-default" href="{% url 'detalhe_termolx' termolx.id %}" 
+    	data-toggle="tooltip" data-placement="top" title="Voltar para lista de termos nas linguas nacionais">
+            Voltar para detalhe <span class="glyphicon glyphicon-list"></span>
+        </a>
+	  </div>
+	  <div class="btn-group">
+	    <a type="button" class="btn btn-md btn-default" href="{% url 'remove_termolx' termolx.id %}"
+    	data-toggle="tooltip" data-placement="top" title="Remover">
+			Remover termo <span class="glyphicon glyphicon-remove"></span>
+		</a>
+	  </div>
+	  {% else %}
+	  <div class="btn-group">
+	    <a type="button" class="btn btn-md btn-default" href="{% url 'detalhe_solicitacao' solicitacao.id %}" 
+    	data-toggle="tooltip" data-placement="top" title="Voltar para lista de termos nas linguas nacionais">
+            Voltar para solicitação <span class="glyphicon glyphicon-list"></span>
+        </a>
+	  </div>
+	  {% endif %}
+	</div>
+
+	{% if messages %}
+		{% for message in messages %}
+		<div {% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>
+	        <a href="#" class="close" data-dismiss="alert">&times;</a>
+		    <p>{{ message }}</p>
+	    </div>
+	    {% endfor %}
+	{% endif %}
+
+  	<div class="panel panel-default">
+		<div class="panel-heading">
+    		<h3 class="panel-title">
+    			{% if termolx_form.instance.pk == None %}
+    				CRIAÇÃO 
+				{% else %}
+					EDIÇÃO
+				{% endif %}
+    				DE NOVO TERMO EM <strong>{{ solicitacao.linguax|upper }}</strong> PARA <strong>{{ solicitacao.termoref.termo|upper }}</strong>
+    		</h3>
+  		</div>
+		<div class="panel-body">
+			<form method="POST" action="" class="horizontal" >
+			{%csrf_token%}
+			<table>
+				{% for field in termolx_form %}
+				<tr>
+					<div class="form-group">
+						</br>
+						<label class="col-md-2 control-label">
+							{{field.label_tag}}
+						</label>
+						<div class="col-md-9">
+							{{field|addcss:"form-control"}}
+		                </div>
+		            	</br>
+					</div>
+				</tr>	
+				{%endfor%}
+				<tr>
+				<div class="form-group">
+		            <div class="col-xs-offset-3 col-xs-9">
+		                <label class="checkbox-inline">
+		                    <input class="hide"></a>.
+		                </label>
+		            </div>
+		        </div>
+		        </tr>
+		        <tr>
+			        <div class="form-group">
+			            <div class="col-xs-offset-3 col-xs-9">
+		                	{% if termolx_form.instance.pk == None %}
+		                		<input type="submit" class="btn btn-primary" value="Cadastrar">
+			                	<input type="reset" class="btn btn-default" value="Reset">
+							{% else %}
+								<input type="submit" class="btn btn-primary" value="Editar">
+							{% endif %}
+			            </div>
+	        		</div>
+			    </tr>
+		    </table>
+			</form>	
+		</div>
+
+			<a type="button" class="btn btn-md btn-info"  data-toggle="collapse" data-target=".toggleDetalhes" value="Toggle Button">
+            Informações da apoio para a 
+            {% if termolx_form.instance.pk == None %}
+    				criação 
+				{% else %}
+					edição
+				{% endif %} 
+			do novo termo <span class="glyphicon glyphicon-chevron-down"></span>
+        </a><br/><br/>
+
+	<div class="panel-group" id="accordion">
+      <div class="panel panel-default collapse toggleDetalhes">
+        <div class="panel-heading ">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">DETALHES DA SOLICITAÇÃO</a>
+          </h4>
+        </div>
+        <div id="collapseOne" class="panel-collapse collapse">
+          <div class="panel-body">
+            <table class="table">
+				<tr>
+				    <th>Termo em português:</th>
+				    <td>{{solicitacao.termoref.termo}}</td>
+				    <th>Lingua solicitada:</th>
+				    <td>{{solicitacao.linguax}}</td>
+			  	</tr>
+			  	<tr>
+			  		<th>Data primeira solicitação:</th>
+				    <td>{{solicitacao.data_insercao|date:"M d, Y"}}</td>
+				    <th>Estado:</th>
+				    <td>{{solicitacao.estado}}</td>
+			  	</tr>	
+			  	<tr>
+				    <th>Usuários Solicitantes:</th>
+				    <td>{{solicitacao.usuario_solicitantes.count}}</td>
+				    <th>Linguistas analisando:</th>
+				    <td>{{solicitacao.usuario_em_analise.count}}</td>
+			  	</tr>  	
+			</table>
+          </div>
+        </div>
+      </div>
+      <div class="panel panel-default collapse toggleDetalhes">
+        <div class="panel-heading">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">SUGESTÕES PARA O NOVO TERMO</a>
+          </h4>
+        </div>
+        <div id="collapseTwo" class="panel-collapse collapse">
+          <div class="panel-body">
+            
+          	{% if sugestao_list_query %}
+			<table class="table">
+				<thead>
+					<tr>
+					    <th>Termo</th>
+					    <th>Usuário cadastrante</th>
+					    <th>Justificativa</th>
+					    <th>Aprova</th>
+					    <th>Rejeita</th>
+				  	</tr>
+			   	</thead>
+			   	<tbody>
+			  		{% for sugestao in sugestao_list_query %}
+			  		<tr>
+			  			<td> {{sugestao.termo}} </td>
+					    <td> {{sugestao.usuario_insere_sugestao.username}} </td>
+					    <td> {{sugestao.justificativa}} </td>
+					    <td> {{sugestao.usuario_aprova_sugestao.count}} </td>
+					    <td> {{sugestao.usuario_rejeita_sugestao.count}} </td>
+				  	</tr>
+			  		{% endfor %} 
+		  		</tbody>
+			</table>
+				<!-- PAGINAÇÃO -->
+			    <ul class="pagination">
+			    {% if sugestao_list_query.has_previous %}
+			        <li><a href="?page={{ sugestao_list_query.previous_page_number }}{{ getvars }}{{ hashtag }}" class="prev">&lsaquo;&lsaquo;</a></li>
+			    {% else %}
+			        <li class="disabled prev"><a href="#">&lsaquo;&lsaquo;</a></li>
+			    {% endif %}
+
+			    {% for i in paginator_sugestao.page_range %}
+		            <li {% if sugestao_list_query.number == i %} class="active" {% endif %}><a href="?page={{i}}">{{i}}</a></li>
+		        {% endfor %}
+
+			    {% if sugestao_list_query.has_next %}
+			        <li><a href="?page={{ sugestao_list_query.next_page_number }}{{ getvars }}{{ hashtag }}" class="next">&rsaquo;&rsaquo;</a></li>
+			    {% else %}
+			        <li class="disabled next"><a href="#">&rsaquo;&rsaquo;</a></li>
+			    {% endif %}
+			    </ul>
+			{% else %}
+		  		<p> Não existem sugestões para a criação do termo </p>
+	  		{% endif %}
+
+          </div>
+        </div>
+      </div>
+      <div class="panel panel-default collapse toggleDetalhes">
+        <div class="panel-heading">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">CONCEITOS</a>
+          </h4>
+        </div>
+        <div id="collapseThree" class="panel-collapse collapse">
+          <div class="panel-body">
+            {% if conceitos_list_query %}
+			<table class="table">
+				<thead>
+					<tr>
+					    <th>Lingua</th>
+					    <th>Usuário cadastrante</th>
+					    <th>Conceito</th>
+					    <th>Aprova</th>
+					    <th>Rejeita</th>
+				  	</tr>
+			   	</thead>
+			   	<tbody>
+			  		{% for conceito in conceitos_list_query %}
+			  		<tr>
+					    <td> {{conceito.linguax}} </td>
+					    <td> {{conceito.usuario_insere_conceito.username}} </td>
+					    <td> {{conceito.conceito}} </td>
+					    <td> {{conceito.usuario_aprova_conceito.count}} </td>
+					    <td> {{conceito.usuario_rejeita_conceito.count}} </td>
+				  	</tr>
+			  		{% endfor %} 
+		  		</tbody>
+			</table>
+				<!-- PAGINAÇÃO -->
+			    <ul class="pagination">
+			    {% if conceitos_list_query.has_previous %}
+			        <li><a href="?page={{ conceitos_list_query.previous_page_number }}{{ getvars }}{{ hashtag }}" class="prev">&lsaquo;&lsaquo;</a></li>
+			    {% else %}
+			        <li class="disabled prev"><a href="#">&lsaquo;&lsaquo;</a></li>
+			    {% endif %}
+
+			    {% for i in paginator_conceitos.page_range %}
+		            <li {% if conceitos_list_query.number == i %} class="active" {% endif %}><a href="?page={{i}}">{{i}}</a></li>
+		        {% endfor %}
+
+			    {% if conceitos_list_query.has_next %}
+			        <li><a href="?page={{ conceitos_list_query.next_page_number }}{{ getvars }}{{ hashtag }}" class="next">&rsaquo;&rsaquo;</a></li>
+			    {% else %}
+			        <li class="disabled next"><a href="#">&rsaquo;&rsaquo;</a></li>
+			    {% endif %}
+			    </ul>
+			{% else %}
+		  		<p> Não existem conceitos associados ao termo </p>
+	  		{% endif %}
+          </div>
+        </div>
+      </div>
+	</div>
+
+{% endblock %}
+

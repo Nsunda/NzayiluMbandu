@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block selectNavbar %}
+	<li><a href="{% url 'default' %}">Início</a></li>
+	<li><a href="/dicionario/">Dicionario</a></li>
+	<li class="active"><a href="/maistermos/">+Termos</a></li>
+	<li><a href="/ensino/">Ensino</a></li>
+{% endblock %}
+
+{% block slectSidebar %}
+  <li class="active"><a href="">Solicitações</a></li>
+  <li><a href=" url lista_termo">Propostas</a></li>
+  <li><a href=" url lista_certificacao">Certificados</a></li>
+{% endblock %}
+
+{% block ContentPlaceHolder %}
+	
+	
+	<div class="panel panel-default">
+	  <div class="panel-body">
+	    	<!-- detalhes: Aparece para todos os perfis professores, linguistas e certificadores -->
+	    	<a type="button" class="btn btn-sm btn-info" href="{% url 'lista_termopt' %}" 
+	    	data-toggle="tooltip" data-placement="top" title="Lista">
+	            Voltar para a lista <span class="glyphicon glyphicon-list"></span>
+	        </a>
+			<!-- editar: Aparece só para o solicitante -->
+	    	<a type="button" class="btn btn-sm btn-primary" href=""
+	    	data-toggle="tooltip" data-placement="top" title="Editar">
+				Editar os detalhes <span class="glyphicon glyphicon-pencil"></span>
+			</a>
+			<!-- propor: Aparece só para linguistas -->
+	    	<a type="button" class="btn btn-sm btn-success" href=""
+	    	data-toggle="tooltip" data-placement="top" title="Propor termo">
+				Propor novo termo <span class="glyphicon glyphicon-plus-sign"></span>
+			</a>
+	  </div>
+	</div>
+
+	{% if messages %}
+		<div class="alert alert-info alert-info">
+	        <a href="#" class="close" data-dismiss="alert">&times;</a>
+	        <strong>Mensagem!</strong> 
+	        <ul class="messages">
+			    {% for message in messages %}
+			    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+			    {% endfor %}
+			</ul>
+	    </div>
+	{% endif %}
+
+	<div class="panel panel-default">
+        <div class="panel-heading">
+        Detalhes do termo {{termopt.termo}}
+        </div>
+        <div class="panel-body">
+			<table class="table">
+
+					<tr>
+					    <th>Termo:</th>
+					    <td>{{termopt.termo}}</td>
+				  	</tr>
+				  	<tr>
+					    <th>conceito:</th>
+					    <td>{{termopt.conceito}}</td>
+				  	</tr>
+				  	<tr>
+					    <th>Usuário cadastrante:</th>
+					    <td>{{termopt.usuario_insere_termopt}}</td>
+				  	</tr>
+				  	<tr>
+					    <th>Data de cadastro:</th>
+					    <td>{{termopt.data_insercao}}</td>
+				  	</tr>
+
+			  		{% for termopt in termospt_list %}
+			  		<tr>
+					    <td> {{termopt.termo}} </td>
+					    <td> {{termopt.usuario_insere_termopt.username}} </td>
+					    <td> {{termopt.data_insercao}} </td>
+
+					    <td><!-- detalhes: Aparece para todos os perfis professores, linguistas e certificadores -->
+					    	<a type="button" class="btn btn-xs btn-info" href="" 
+					    	data-toggle="tooltip" data-placement="top" title="Detalhes">
+			                    <span class="glyphicon glyphicon-th-list"></span>
+				            </a>
+							<!-- editar: Aparece só para o solicitante -->
+					    	<a type="button" class="btn btn-xs btn-primary" href=""
+					    	data-toggle="tooltip" data-placement="top" title="Editar">
+								<span class="glyphicon glyphicon-pencil"></span>
+							</a>
+							<!-- propor: Aparece só para linguistas -->
+					    	<a type="button" class="btn btn-xs btn-danger" href=" url 'criar_termo' solicitacao.id"
+					    	data-toggle="tooltip" data-placement="top" title="Remover">
+								<span class="glyphicon glyphicon-remove"></span>
+							</a>
+							<!-- propor: Aparece só para linguistas -->
+					    	<a type="button" class="btn btn-xs btn-success" href=" url 'criar_termo' solicitacao.id"
+					    	data-toggle="tooltip" data-placement="top" title="Solicitar criação de termo nas LN">
+								<span class="glyphicon glyphicon-plus-sign"></span>
+							</a>
+					    </td>
+				  	</tr>
+				  	{% endfor %}
+			</table>
+        </div>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+
+
+{% block slectSidebar %}
+	<div class="panel panel-default">
+		<a href="{% url 'lista_termopt' %}" class="list-group-item " >
+		  <span class="glyphicon glyphicon-cog"></span> Termos em Português
+		</a>
+		<a href="{% url 'lista_solicitacao' %}" class="list-group-item active" >
+		  <span class="glyphicon glyphicon-cog"></span> Solicitações
+		</a>
+		<a href="{% url 'lista_termolx' %}" class="list-group-item" >
+		  <span class="glyphicon glyphicon-cog"></span> Termos nas Ling. Nacionais
+		</a>
+		<a href="{% url 'lista_certificado' %}" class="list-group-item" >
+		  <span class="glyphicon glyphicon-cog"></span> Certificações
+		</a>
+	</div>
+{% endblock %}
+
+{% block ContentPlaceHolder %}
+
+	<!-- Menu ações dentro do modulo -->
+	<div class="btn-group btn-group-centered" style="margin-bottom:6px">
+	  <div class="btn-group">
+	    <a type="button" class="btn btn-md btn-default" href="{% url 'lista_solicitacao' %}" 
+    	data-toggle="tooltip" data-placement="top" title="Voltar para a lista de solicitações">
+            Voltar para a lista <span class="glyphicon glyphicon-list"></span>
+        </a>
+	  </div>
+	</div>
+
+	{% if messages %}
+		{% for message in messages %}
+		<div {% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>
+	        <a href="#" class="close" data-dismiss="alert">&times;</a>
+		    <p>{{ message }}</p>
+	    </div>
+	    {% endfor %}
+	{% endif %}
+
+	<div class="panel panel-default">
+        <div class="panel-heading">
+        	DETALHES DA SOLICITAÇÃO DE CRIAÇÃO DE NOVO TERMO EM <strong>{{solicitacao.linguax|upper}}</strong> PARA O TERMO <strong>{{solicitacao.termoref|upper}}</strong>
+        </div>
+        <div class="panel-body">
+        	<!-- propor: Aparece só para -->
+        	<div>
+		    	{% if solicitacao.usuario_atendente.username == None and perms.maistermos.add_termolx %}
+		    	<a type="button" class="btn btn-sm btn-success pull-left" href="{% url 'cadastra_termolx' solicitacao.id %}"
+		    	data-toggle="tooltip" data-placement="top" title="Criar novo termo e atender solicitação" style="margin-left:5px">
+					Atender solicitação <span class="glyphicon glyphicon-book"></span>
+				</a>
+				{% endif %}
+				
+			</div><br/><br/>
+			<table class="table">
+				<tr>
+				    <th>Termo em português:</th>
+				    <td>{{solicitacao.termoref.termo}}</td>
+				    <th>Lingua solicitada:</th>
+				    <td>{{solicitacao.linguax}}</td>
+			  	</tr>
+			  	<tr>
+			  		<th>Data primeira solicitação:</th>
+				    <td>{{solicitacao.data_insercao|date:"M d, Y"}}</td>
+				    <th>Estado:</th>
+				    <td><b id="estado_sol">
+				    	{{solicitacao.estado}}</b> 
+				    	<span data-toggle="tooltip" data-placement="top" title="Detalhes" class="glyphicon glyphicon-question-sign"></span>
+				    </td>
+			  	</tr>	
+			  	<tr>
+				    <th>Usuários Solicitantes:</th>
+				    <td>{{solicitacao.usuario_solicitantes.count}}</td>
+				    <th>Linguistas analisando:</th>
+				    <td>
+				    	{% if perms.maistermos.add_termolx %}
+					    	<a id="but_sim_est" type="button" data-conid="{{solicitacao.id}}" class="btn btn-xs btn-warning sim_estudo_solicitacao" data-toggle="tooltip" data-placement="top" title="Estou analisando esta solicitação">
+							<span class="glyphicon glyphicon-eye-open"></span>
+							</a>
+					    	<a id="but_nao_est" type="button" data-conid="{{solicitacao.id}}" class="btn btn-xs btn-warning nao_estudo_solicitacao" data-toggle="tooltip" data-placement="top" title="Não estou analisando mais esta solicitação">
+							<span class="glyphicon glyphicon-eye-close"></span>
+							</a>
+					    	<b id="cont_lin_est">
+					    		{{solicitacao.usuario_em_analise.count}} 
+					    	</b>
+				    	{% else %}
+					    	{{solicitacao.usuario_em_analise.count}}
+						{% endif %}
+				    </td>
+			  	</tr>
+			  	<tr>
+			  	{% if solicitacao.usuario_atendente.username != None %}
+				    <th>Atendente:</th>
+				    <td>{{solicitacao.usuario_atendente.username}}</td>
+				    <th>Data de atendimento:</th>
+				    <td>{{solicitacao.data_inicio_atendimento|date:"M d, Y"}}</td>
+			  	{% endif %}	
+			  	</tr>	  	
+			</table>
+        </div>
+
+        <div class="panel-heading">
+        	SUGESTÕES PARA O NOVO TERMO EM {{ solicitacao.linguax|upper }}
+        </div>
+        <div class="panel-body">
+        	<a type="button" class="btn btn-sm btn-success pull-left" href="{% url 'cadastra_sugestao' solicitacao.id %}" 
+	    	data-toggle="tooltip" data-placement="top" title="Detalhes">
+	            Adicionar sugestao <span class="glyphicon glyphicon-plus"></span>
+	        </a></br></br>
+			{% if sugestao_list_query %}
+			<table class="table">
+				<thead>
+					<tr>
+					    <th>Termo</th>
+					    <th>Justificativa</th>
+					    <th>Cadastrante</th>
+					    <th>Aprova</th>
+					    <th>Rejeita</th>
+					    <th></th>
+				  	</tr>
+			   	</thead>
+			   	<tbody>
+			  		{% for sugestao in sugestao_list_query %}
+			  		<tr>
+			  			<td> {{sugestao.termo}} </td>
+					    <td> {{sugestao.justificativa}} </td>
+					    <td> {{sugestao.usuario_insere_sugestao}} </td>
+					    <td> 
+					    	<a id="but_apr_sug{{sugestao.id}}" type="button" data-conid="{{sugestao.id}}" class="btn btn-xs btn-warning aprova_sugestao" data-toggle="tooltip" data-placement="top" title="Gostei! aprovo esta sugestão">
+							<span class="glyphicon glyphicon-thumbs-up"></span>
+							</a>
+					    	<b id="cont_apr_sug{{sugestao.id}}">
+					    		{{sugestao.usuario_aprova_sugestao.count}}
+					    	</b>
+					    </td>
+					    <td> 
+					    	<a id="but_rej_sug{{sugestao.id}}" type="button" data-conid="{{sugestao.id}}" class="btn btn-xs btn-warning rejeita_sugestao" data-toggle="tooltip" data-placement="top" title="Não Gostei, rejeito esta sugestão">
+							<span class="glyphicon glyphicon-thumbs-down"></span>
+							</a>
+					    	<b id="cont_rej_sug{{sugestao.id}}">
+					    		{{sugestao.usuario_rejeita_sugestao.count}} 
+					    	</b>
+					    </td>	
+					    <td><!-- detalhes: Aparece para todos os perfis professores, linguistas e certificadores -->
+					    	<a type="button" class="btn btn-xs btn-info" href="{% url 'detalhe_sugestao' sugestao.id %}" 
+					    	data-toggle="tooltip" data-placement="top" title="Detalhes da sugestão">
+			                   {% if sugestao.usuario_insere_sugestao.username == user.username %}
+			                    Gerir
+		                    {% else %}
+		                    	Detalhes
+		                    {% endif %} <span class="glyphicon glyphicon-th-list"></span>
+				            </a>
+					    </td>
+				  	</tr>
+			  		{% endfor %} 
+		  		</tbody>
+			</table>
+				<!-- PAGINAÇÃO -->
+			    <ul class="pagination">
+			    {% if sugestao_list_query.has_previous %}
+			        <li><a href="?page={{ sugestao_list_query.previous_page_number }}{{ getvars }}{{ hashtag }}" class="prev">&lsaquo;&lsaquo;</a></li>
+			    {% else %}
+			        <li class="disabled prev"><a href="#">&lsaquo;&lsaquo;</a></li>
+			    {% endif %}
+
+			    {% for i in paginator.page_range %}
+		            <li {% if sugestao_list_query.number == i %} class="active" {% endif %}><a href="?page={{i}}">{{i}}</a></li>
+		        {% endfor %}
+
+			    {% if sugestao_list_query.has_next %}
+			        <li><a href="?page={{ sugestao_list_query.next_page_number }}{{ getvars }}{{ hashtag }}" class="next">&rsaquo;&rsaquo;</a></li>
+			    {% else %}
+			        <li class="disabled next"><a href="#">&rsaquo;&rsaquo;</a></li>
+			    {% endif %}
+			    </ul>
+			{% else %}
+		  		<p> Não existem sugestões para a criação do termo </p>
+	  		{% endif %}
+	  	</div>
+    </div>
+
+{% endblock %}

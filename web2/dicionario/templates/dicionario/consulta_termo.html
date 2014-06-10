@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block selectNavbar %}
+	<li><a href="{% url 'default' %}">Início</a></li>
+	<li class="active"><a href="{% url 'consultar_termo' %}">Dicionario</a></li>
+	{% if user.is_authenticated %}
+		<li><a href="{% url 'mais_termos' %}">+Termos</a></li>
+		<li><a href="{% url 'ensino' %}">Ensino</a></li>
+	{% endif %}
+{% endblock %}
+
+{% block slectSidebar %}
+	    <a href="{% url 'consultar_termo' %}" class="list-group-item active" >
+		  <span class="glyphicon glyphicon-plus"></span> Consultas
+		</a>
+		<a href="" class="list-group-item" >
+		  <span class="glyphicon glyphicon-bookmark"></span> Novos termos
+		</a>
+		<a href="" class="list-group-item" >
+		  <span class="glyphicon glyphicon-cog"></span> Exemplos de busca
+		</a>
+		<a href="" class="list-group-item" >
+		  <span class="glyphicon glyphicon-cog"></span> Palavra do dia
+		</a>
+{% endblock %}
+
+{% block ContentPlaceHolder %}
+	
+	<!-- Barra de busca -->
+	<div class="well well-sm">
+		<form method="POST" action="" class="horizontal" >
+		{%csrf_token%}
+			<div class="input-group">
+				<input name="q" type="text" placeholder="Buscar" class="form-control">
+				<div class="input-group-btn">
+					<select name="filtro_busca" class="btn btn-default btn-sm" type="button" style="height:34px; width:160px"> 
+					    {% for traducao_opcao in traducao_opcao_list %}
+	            			<option value="{{traducao_opcao}}">{{traducao_opcao}}</option>
+	            		{% endfor %}
+					</select> 
+				    <button type="submit" class="btn btn-default btn-sm" style="height:34px;">
+						<span class="glyphicon glyphicon-search"></span>
+					</button>
+			  	</div>
+			</div>
+		</form>
+	</div>
+
+	<!-- Mensagens -->
+	{% if messages %}
+		{% for message in messages %}
+		<div {% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>
+	        <a href="#" class="close" data-dismiss="alert">&times;</a>
+		    <p>{{ message }}</p>
+	    </div>
+	    {% endfor %}
+	{% endif %}
+
+	<div class="panel panel-default">
+		<div class="panel-heading">
+	        RESULTADO DA BUSCA
+        </div>
+		
+	    <div class="panel-body" >
+		{% if lingua_origem  != None %}
+
+
+
+
+			{% if lingua_destino != None %}
+
+			{% else %}
+
+			{% endif %}
+
+	    	<p>({{lingua_origem}}) <strong>{{termoOrigem}}:</strong></p>
+			<p>({{lingua_destino}}) <strong>{{termoDestino.termo}}:</strong></p>
+
+			{% if conceitos_list_query %}
+			
+				{% for conceito in conceitos_list_query %}
+				<blockquote style="text-align:justify; font-size:medium;">
+				  {{conceito.conceito}}.
+				  <footer>
+				  	Cadastrado por: {{conceito.usuario_insere_conceito.username}}
+				  	{% if user.is_authenticated %}
+				  	<a id="but_apr_{{conceito.id}}" type="button" data-conid="{{conceito.id}}" class="btn btn-xs btn-warning aprova_conceito" data-toggle="tooltip" data-placement="top" title="Gostei! aprovo este conceito">
+						<span class="glyphicon glyphicon-thumbs-up"></span>
+					</a>
+			    	<b id="cont_apr_{{conceito.id}}">
+			    		{{conceito.usuario_aprova_conceito.count}}
+			    	</b>
+			    	<a id="but_rej_{{conceito.id}}" type="button" data-conid="{{conceito.id}}" class="btn btn-xs btn-warning rejeita_conceito" data-toggle="tooltip" data-placement="top" title="Gostei! aprovo este conceito">
+						<span class="glyphicon glyphicon-thumbs-down"></span>
+					</a>
+			    	<b id="cont_rej_{{conceito.id}}">
+			    		{{conceito.usuario_rejeita_conceito.count}}
+			    	</b>
+			    	{% endif %}
+				  </footer>
+				</blockquote>
+				{% endfor %} 
+			  		<!-- PAGINAÇÃO -->
+			    <ul class="pagination">
+			    {% if conceitos_list_query.has_previous %}
+			        <li><a href="?page={{ conceitos_list_query.previous_page_number }}{{ getvars }}{{ hashtag }}" class="prev">&lsaquo;&lsaquo;</a></li>
+			    {% else %}
+			        <li class="disabled prev"><a href="#">&lsaquo;&lsaquo;</a></li>
+			    {% endif %}
+
+			    {% for i in paginator_conceitos.page_range %}
+			        <li {% if conceitos_list_query.number == i %} class="active" {% endif %}><a href="?page={{i}}">{{i}}</a></li>
+			    {% endfor %}
+
+			    {% if conceitos_list_query.has_next %}
+			        <li><a href="?page={{ conceitos_list_query.next_page_number }}{{ getvars }}{{ hashtag }}" class="next">&rsaquo;&rsaquo;</a></li>
+			    {% else %}
+			        <li class="disabled next"><a href="#">&rsaquo;&rsaquo;</a></li>
+			    {% endif %}
+			    </ul>
+			{% else %}
+				<p> Não existem conceitos associados ao termo </p>
+			{% endif %}
+		{% else %}
+			<p> Sem resultados </p>
+		{% endif %}
+
+
+
+	</div>
+
+
+
+
+
+{% endblock %}

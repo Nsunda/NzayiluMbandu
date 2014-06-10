@@ -1,0 +1,232 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block selectNavbar %}
+	<li><a href="{% url 'default' %}">Início</a></li>
+	<li><a href="/dicionario/">Dicionario</a></li>
+	<li class="active"><a href="/maistermos/">+Termos</a></li>
+	<li><a href="/ensino/">Ensino</a></li>
+{% endblock %}
+
+{% block slectSidebar %}
+	<div class="panel panel-default">
+		<a href="{% url 'lista_termopt' %}" class="list-group-item active" >
+		  <span class="glyphicon glyphicon-cog"></span> Termos em Português
+		</a>
+		<a href="{% url 'lista_solicitacao' %}" class="list-group-item" >
+		  <span class="glyphicon glyphicon-cog"></span> Solicitações
+		</a>
+		<a href="{% url 'lista_termolx' %}" class="list-group-item" >
+		  <span class="glyphicon glyphicon-cog"></span> Termos nas Ling. Nacionais
+		</a>
+		<a href="{% url 'lista_certificado' %}" class="list-group-item" >
+		  <span class="glyphicon glyphicon-cog"></span> Certificações
+		</a>
+	</div>
+{% endblock %}
+
+{% block ContentPlaceHolder %}
+	
+	<div class="btn-group btn-group-centered" style="margin-bottom:6px">
+	  <div class="btn-group">
+	    <a type="button" class="btn btn-md btn-default" href="{% url 'lista_termopt' %}" 
+    	data-toggle="tooltip" data-placement="top" title="Detalhes">
+            Voltar para a lista <span class="glyphicon glyphicon-list"></span>
+        </a>
+	  </div>
+	  {% if termopt.usuario_insere_termopt.username == user.username %}
+	  <div class="btn-group">
+	    <a type="button" class="btn btn-md btn-default" href="{% url 'edita_termopt' termopt.id %}"
+    	data-toggle="tooltip" data-placement="top" title="Editar">
+			Editar os detalhes <span class="glyphicon glyphicon-pencil"></span>
+		</a>
+	  </div>
+	  <div class="btn-group">
+	    <a type="button" class="btn btn-md btn-default" href="{% url 'remove_termopt' termopt.id %}"
+    	data-toggle="tooltip" data-placement="top" title="Remover">
+			Remover termo <span class="glyphicon glyphicon-remove"></span>
+		</a>
+	  </div>
+	  {% endif%}
+	</div>
+
+
+	{% if messages %}
+		{% for message in messages %}
+		<div {% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>
+	        <a href="#" class="close" data-dismiss="alert">&times;</a>
+		    <p>{{ message }}</p>
+	    </div>
+	    {% endfor %}
+	{% endif %}
+
+	<div class="panel panel-default">
+        <div class="panel-heading">
+        	DETALHES DO TERMO EM PORTUGUÊS <strong> {{termopt.termo|upper}}</strong>
+        </div>
+        <div class="panel-body">
+			<table class="table">
+				<tr>
+				    <th>{{termopt.termo}}:</th>
+				    <td>{{termopt.conceito}}</td>
+			  	</tr>
+		  	</table>
+
+		  	<table class="table">
+			  	<tr>
+				    <th>Usuário cadastrante:</th>
+				    <td>{{termopt.usuario_insere_termopt}}</td>
+				    <th>Data de cadastro:</th>
+				    <td>{{termopt.data_insercao|date:"M d, Y"}}</td>
+			  	</tr>		  	
+			</table>
+        </div>
+
+        <div class="panel-heading">
+        	CONCEITOS ASSOCIADOS 
+        </div>
+        <div class="panel-body">
+        	{% if perms.maistermos.add_conceito %}
+        	<a type="button" class="btn btn-sm btn-success pull-left" href="{% url 'cadastra_conceito' termopt.id %}"
+	    	data-toggle="tooltip" data-placement="top" title="Detalhes">
+	            Adicionar conceitos <span class="glyphicon glyphicon-plus"></span>
+	        </a></br></br>
+	        {% endif %}
+			{% if conceitos_list_query %}
+			<table class="table">
+				<thead>
+					<tr>
+					    <th>Lingua</th>
+					    <th>Conceito</th>
+					    <th>Cadastrante</th>
+					    <th>Aprova</th>
+					    <th>Rejeita</th>
+					    <th></th>
+				  	</tr>
+			   	</thead>
+			   	<tbody>
+			  		{% for conceito in conceitos_list_query %}
+			  		<tr>
+					    <td> {{conceito.linguax}} </td>
+					    <td> {{conceito.conceito}} </td>
+					    <td> {{conceito.usuario_insere_conceito}} </td>
+					    <td> 
+					    	<a id="but_apr_con{{conceito.id}}" type="button" data-conid="{{conceito.id}}" class="btn btn-xs btn-warning aprova_conceito" data-toggle="tooltip" data-placement="top" title="Gostei! aprovo este conceito">
+								<span class="glyphicon glyphicon-thumbs-up"></span>
+							</a>
+					    	<b id="cont_apr_con{{conceito.id}}">
+					    		{{conceito.usuario_aprova_conceito.count}}
+					    	</b>
+					    </td>
+					    <td> 
+					    	<a id="but_rej_con{{conceito.id}}" type="button" data-conid="{{conceito.id}}" class="btn btn-xs btn-warning rejeita_conceito" data-toggle="tooltip" data-placement="top" title="NãoGostei,  rejeito este conceito">
+								<span class="glyphicon glyphicon-thumbs-down"></span>
+							</a>
+					    	<b id="cont_rej_con{{conceito.id}}">
+					    		{{conceito.usuario_rejeita_conceito.count}}
+					    	</b>
+					    </td>
+					    <td><!-- detalhes: Aparece para  -->
+					    	<a type="button" class="btn btn-xs btn-info" href="{% url 'detalhe_conceito' conceito.id %}" 
+					    	data-toggle="tooltip" data-placement="top" title="{% if conceito.usuario_insere_conceito.username == user.username %}
+			                    Gerir
+		                    {% else %}
+		                    	Detalhes
+		                    {% endif %}">
+					    	{% if conceito.usuario_insere_conceito.username == user.username %}
+			                    Gerir
+		                    {% else %}
+		                    	Detalhes
+		                    {% endif %}  <span class="glyphicon glyphicon-th-list"></span>
+				            </a>
+					    </td>
+				  	</tr>
+			  		{% endfor %} 
+		  		</tbody>
+			</table>
+				<!-- PAGINAÇÃO -->
+			    <ul class="pagination">
+			    {% if conceitos_list_query.has_previous %}
+			        <li><a href="?page={{ conceitos_list_query.previous_page_number }}{{ getvars }}{{ hashtag }}" class="prev">&lsaquo;&lsaquo;</a></li>
+			    {% else %}
+			        <li class="disabled prev"><a href="#">&lsaquo;&lsaquo;</a></li>
+			    {% endif %}
+
+			    {% for i in paginator_conceitos.page_range %}
+		            <li {% if conceitos_list_query.number == i %} class="active" {% endif %}><a href="?page={{i}}">{{i}}</a></li>
+		        {% endfor %}
+
+			    {% if conceitos_list_query.has_next %}
+			        <li><a href="?page={{ conceitos_list_query.next_page_number }}{{ getvars }}{{ hashtag }}" class="next">&rsaquo;&rsaquo;</a></li>
+			    {% else %}
+			        <li class="disabled next"><a href="#">&rsaquo;&rsaquo;</a></li>
+			    {% endif %}
+			    </ul>
+			{% else %}
+		  		<p> Não existe nenhum conceito associado ao termo <strong> {{termopt.termo|upper}}</strong> </p>
+	  		{% endif %}
+	  	</div>
+
+        <div class="panel-heading">
+        	SOLICITAÇÕES ASSOCIADOS 
+        </div>
+        <div class="panel-body">
+        	<a type="button" class="btn btn-sm btn-success pull-left" href="{% url 'cadastra_solicitacao' termopt.id %}" 
+	    	data-toggle="tooltip" data-placement="top" title="Solicitar criação termo">
+	            Solicitar criação de termo <span class="glyphicon glyphicon-bookmark"></span>
+	        </a></br></br>
+			{% if solicitacoes_list_query %}
+			<table class="table">
+				<thead>
+					<tr>
+					    <th>Lingua</th>
+					    <th>Data 1ra solicitação</th>
+					    <th>Solicitantes</th>
+					    <th>Estado</th>
+					    <th>Analisando</th>
+					    <th></th>
+				  	</tr>
+			   	</thead>
+			   	<tbody>
+			  		{% for solicitacao in solicitacoes_list_query %}
+			  		<tr>
+					    <td> {{solicitacao.linguax}} </td>
+					    <td> {{solicitacao.data_insercao|date:"M d, Y"}} </td>
+					    <td> {{solicitacao.usuario_solicitantes.count}} </td>
+					    <td> {{solicitacao.estado}} </td>
+					    <td> {{solicitacao.usuario_em_analise.count}} </td>
+					    <td><!-- detalhes: Aparece para todos os perfis professores, linguistas e certificadores -->
+					    	<a type="button" class="btn btn-xs btn-info" href="{% url 'detalhe_solicitacao' solicitacao.id %}" 
+					    	data-toggle="tooltip" data-placement="top" title="Detalhes">
+			                    Detalhes <span class="glyphicon glyphicon-th-list"></span>
+				            </a>
+					    </td>
+				  	</tr>
+			  		{% endfor %} 
+		  		</tbody>
+			</table>
+				<!-- PAGINAÇÃO -->
+			    <ul class="pagination">
+			    {% if solicitacoes_list_query.has_previous %}
+			        <li><a href="?page={{ solicitacoes_list_query.previous_page_number }}{{ getvars }}{{ hashtag }}" class="prev">&lsaquo;&lsaquo;</a></li>
+			    {% else %}
+			        <li class="disabled prev"><a href="#">&lsaquo;&lsaquo;</a></li>
+			    {% endif %}
+
+			    {% for i in paginator_solicitacoes.page_range %}
+		            <li {% if solicitacoes_list_query.number == i %} class="active" {% endif %}><a href="?page={{i}}">{{i}}</a></li>
+		        {% endfor %}
+
+			    {% if solicitacoes_list_query.has_next %}
+			        <li><a href="?page={{ solicitacoes_list_query.next_page_number }}{{ getvars }}{{ hashtag }}" class="next">&rsaquo;&rsaquo;</a></li>
+			    {% else %}
+			        <li class="disabled next"><a href="#">&rsaquo;&rsaquo;</a></li>
+			    {% endif %}
+			    </ul>
+			{% else %}
+		  		<p> Não existem solicitações para criação de novo termo nas linguas nacionais associados ao termo em português <strong> {{termopt.termo|upper}}</strong> </p>
+	  		{% endif %}
+	  	</div>
+    </div>
+
+{% endblock %}

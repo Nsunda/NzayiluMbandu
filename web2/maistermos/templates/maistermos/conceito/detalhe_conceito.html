@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+
+{% block slectSidebar %}
+		{% if perms.maistermos %}
+	    <a href="{% url 'cadastra_termopt' %}" class="list-group-item" >
+		  <span class="glyphicon glyphicon-plus"></span> Cadastrar termos PT
+		</a>
+		<a href="{% url 'cria_solicitacao' %}" class="list-group-item" >
+		  <span class="glyphicon glyphicon-bookmark"></span> Solicitar criação termos LN
+		</a>
+		<a href="{% url 'lista_termopt' %}" class="list-group-item active" >
+		  <span class="glyphicon glyphicon-cog"></span> Gerir termos PT
+		</a>
+		<a href="{% url 'lista_solicitacao' %}" class="list-group-item" >
+		  <span class="glyphicon glyphicon-cog"></span> Gerir solicitações
+		</a>
+		<a href="{% url 'lista_termolx' %}" class="list-group-item" >
+		  <span class="glyphicon glyphicon-cog"></span> Gerir termos LN
+		</a>
+		<a href="{% url 'lista_certificado' %}" class="list-group-item" >
+		  <span class="glyphicon glyphicon-cog"></span> Gerir certificados
+		</a>
+		{% endif %}
+{% endblock %}
+
+{% block ContentPlaceHolder %}
+
+		<!-- Menu ações dentro do modulo -->
+		<div class="btn-group btn-group-centered" style="margin-bottom:6px">
+		  <div class="btn-group">
+		    <a type="button" class="btn btn-md btn-default" href="{% url 'detalhe_termopt' conceito.termoref.id %}" 
+	    	data-toggle="tooltip" data-placement="top" title="Detalhes">
+	            Voltar para detalhe do termo <span class="glyphicon glyphicon-th-list"></span>
+	        </a>
+		  </div>
+		  {% if conceito.usuario_insere_conceito.username == user.username %}
+		  <div class="btn-group">
+		    <a type="button" class="btn btn-md btn-default" href="{% url 'edita_conceito' conceito.id %}"
+	    	data-toggle="tooltip" data-placement="top" title="Editar">
+				Editar conceito <span class="glyphicon glyphicon-pencil"></span>
+			</a>
+		  </div>
+		  <div class="btn-group">
+		    <a type="button" class="btn btn-md btn-default" href="{% url 'remove_conceito' conceito.id %}"
+	    	data-toggle="tooltip" data-placement="top" title="Remover">
+				Remover conceito <span class="glyphicon glyphicon-remove"></span>
+			</a>
+		  </div>
+		  {% endif %}
+		</div>
+
+	{% if messages %}
+		{% for message in messages %}
+		<div {% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>
+	        <a href="#" class="close" data-dismiss="alert">&times;</a>
+		    <p>{{ message }}</p>
+	    </div>
+	    {% endfor %}
+	{% endif %}
+
+	<div class="panel panel-default">
+        <div class="panel-heading">
+        	DETALHES DO CONCEITO EM <strong> {{conceito.linguax|upper}}</strong> PARA O TERMO  <strong> {{conceito.termoref.termo|upper}}</strong>
+        </div>
+        <div class="panel-body">
+			<table class="table">
+
+			  	<tr>
+			  		<th>Conceito:</th>
+				    <td>{{conceito.conceito}}</td>
+			  	</tr>
+			</table>
+			<table class="table"> 	
+			  	<tr>
+				    <th>Usuário cadastrante:</th>
+				    <td>{{conceito.usuario_insere_conceito}}</td>
+				    <th>Data de cadastro:</th>
+				    <td>{{conceito.data_insercao|date:"M d, Y"}}</td>
+			  	</tr>
+			  	<tr>
+				    <th>Aprovações:</th>
+				    <td>
+				    	<a id="but_apr_con{{conceito.id}}" type="button" data-conid="{{conceito.id}}" class="btn btn-xs btn-warning aprova_conceito" data-toggle="tooltip" data-placement="top" title="Gostei! aprovo este conceito">
+						<span class="glyphicon glyphicon-thumbs-up"></span>
+						</a>
+				    	<b id="cont_apr_con{{conceito.id}}">
+				    		{{conceito.usuario_aprova_conceito.count}}
+				    	</b>
+				    </td>
+
+				    <th>Rejeições:</th>
+				    <td>
+				    	<a id="but_rej_con{{conceito.id}}" type="button" data-conid="{{conceito.id}}" class="btn btn-xs btn-warning rejeita_conceito" data-toggle="tooltip" data-placement="top" title="Não Gostei, rejeito este conceito">
+						<span class="glyphicon glyphicon-thumbs-down"></span>
+						</a>
+				    	<b id="cont_rej_con{{conceito.id}}">
+				    		{{conceito.usuario_rejeita_conceito.count}}
+				    	</b>
+				    </td>
+			  	</tr>		 	
+			</table>
+        </div>
+    </div>
+
+{% endblock %}

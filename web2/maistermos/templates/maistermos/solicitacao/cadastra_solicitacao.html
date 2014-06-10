@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% load widget_tweaks %}
+{% load staticfiles %}
+{% load extra_order %}
+
+
+{% block slectSidebar %}
+		{% if perms.maistermos %}
+	    <a href="{% url 'cadastra_termopt' %}" class="list-group-item" >
+		  <span class="glyphicon glyphicon-plus"></span> Cadastrar termos PT
+		</a>
+		<a href="{% url 'cria_solicitacao' %}" class="list-group-item active" >
+		  <span class="glyphicon glyphicon-bookmark"></span> Solicitar criação termos LN
+		</a>
+		<a href="{% url 'lista_termopt' %}" class="list-group-item" >
+		  <span class="glyphicon glyphicon-cog"></span> Gerir termos PT
+		</a>
+		<a href="{% url 'lista_solicitacao' %}" class="list-group-item" >
+		  <span class="glyphicon glyphicon-cog"></span> Gerir solicitações
+		</a>
+		<a href="{% url 'lista_termolx' %}" class="list-group-item" >
+		  <span class="glyphicon glyphicon-cog"></span> Gerir termos LN
+		</a>
+		<a href="{% url 'lista_certificado' %}" class="list-group-item" >
+		  <span class="glyphicon glyphicon-cog"></span> Gerir certificados
+		</a>
+		{% endif %}
+
+{% endblock %}
+
+{% block ContentPlaceHolder %}
+
+	
+	{% if messages %}
+		{% for message in messages %}
+		<div {% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>
+	        <a href="#" class="close" data-dismiss="alert">&times;</a>
+		    <p>{{ message }}</p>
+	    </div>
+	    {% endfor %}
+	{% endif %}
+
+	<div class="panel panel-default">
+		<div class="panel-heading">
+    		<h3 class="panel-title">
+    			{% if termopt_form.instance.pk == None %}
+            		SOLICITAR CRIAÇÃO DE NOVO TERMO 
+				{% else %}
+					EDITAR SOLICITAÇÃO
+				{% endif %} 
+    		</h3>
+  		</div>
+		<div class="panel-body">
+			<form method="POST" action="/maistermos/solicitacao/cadastra/{{termopt.id}}" class="horizontal" >
+			{%csrf_token%}
+			<table>
+				<tr>
+					<div class="form-group">
+
+						<label class="col-md-5 control-label">
+							Termo Português:
+						</label>
+						<div class="col-md-6">
+							<strong>{{termopt.termo|upper}}</strong>
+		                </div>
+		            	</br>
+					</div>
+				</tr>
+				{% for field in solicitacao_form %}
+				<tr>
+					<div class="form-group">
+
+						<label class="col-md-5 control-label">
+							{{field.label_tag}}
+						</label>
+						<div class="col-md-6">
+							{{field|addcss:"form-control"}}
+		                </div>
+		            	</br>
+					</div>
+				</tr>	
+				{%endfor%}
+			</table>
+		</div>
+		<a type="button" class="btn btn-sm btn-success pull-left" style="margin-left:20px" data-toggle="collapse" data-target="#toggleDemo" value="Toggle Button">
+            Adicionar uma sugestão para o novo termo <span class="glyphicon glyphicon-plus"></span>
+        </a><br/>
+		<div id="toggleDemo" class="panel-body collapse">
+			<table>
+				{% for field in sugestao_form %}
+				<tr>
+					<div class="form-group">
+						</br>
+						<label class="col-md-3 control-label">
+							{{field.label_tag}}
+						</label>
+						<div class="col-md-9">
+							{{field|addcss:"form-control"}}
+		                </div>
+		            	</br>
+					</div>
+				</tr>	
+				{%endfor%}
+			</table>
+		</div>
+			<div class="panel-body">
+			<table>
+				<!--<tr>
+				<div class="form-group">
+		            <div class="col-xs-offset-3 col-xs-9">
+		                <label class="checkbox-inline">
+		                    <input class="hide"></a>.
+		                </label>
+		            </div>
+		        </div>
+		        </tr>-->
+		        <tr>
+			        <div class="form-group">
+			            <div class="col-xs-offset-3 col-xs-9">
+		                	{% if termopt_form.instance.pk == None %}
+		                		<input type="submit" class="btn btn-primary" value="Solicitar">
+			                	<input type="reset" class="btn btn-default" value="Reset">
+							{% else %}
+								<input type="submit" class="btn btn-primary" value="Editar">
+							{% endif %}
+			            </div>
+	        		</div>
+			    </tr>
+		    </table>
+			</form>	
+		</div>
+	</div>
+{% endblock %}
+

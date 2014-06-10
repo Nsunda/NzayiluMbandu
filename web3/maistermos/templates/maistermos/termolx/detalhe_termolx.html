@@ -1,0 +1,372 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% load widget_tweaks %}
+{% load staticfiles %}
+{% load extra_order %}
+
+
+{% block slectSidebar %}
+	<div class="panel panel-default">
+		<a href="{% url 'lista_termopt' %}" class="list-group-item " >
+		  <span class="glyphicon glyphicon-cog"></span> Termos em Português
+		</a>
+		<a href="{% url 'lista_solicitacao' %}" class="list-group-item " >
+		  <span class="glyphicon glyphicon-cog"></span> Solicitações
+		</a>
+		<a href="{% url 'lista_termolx' %}" class="list-group-item active" >
+		  <span class="glyphicon glyphicon-cog"></span> Termos nas Ling. Nacionais
+		</a>
+		<a href="{% url 'lista_certificado' %}" class="list-group-item" >
+		  <span class="glyphicon glyphicon-cog"></span> Certificações
+		</a>
+	</div>
+{% endblock %}
+
+{% block ContentPlaceHolder %}
+
+		<!-- Menu ações dentro do modulo -->
+
+	<div class="btn-group btn-group-centered" style="margin-bottom:6px">
+	  <div class="btn-group">
+	    <a type="button" class="btn btn-md btn-default" href="{% url 'lista_termolx' %}" 
+    	data-toggle="tooltip" data-placement="top" title="Detalhes">
+            Voltar para a lista <span class="glyphicon glyphicon-list"></span>
+        </a>
+	  </div>
+	  <div class="btn-group">
+	    <a type="button" class="btn btn-md btn-default" href="{% url 'edita_termolx' termolx.id %}"
+    	data-toggle="tooltip" data-placement="top" title="Editar">
+			Editar os detalhes <span class="glyphicon glyphicon-pencil"></span>
+		</a>
+	  </div>
+	  <div class="btn-group">
+	    <a type="button" class="btn btn-md btn-default" href="{% url 'remove_termolx' termolx.id %}"
+    	data-toggle="tooltip" data-placement="top" title="Remover">
+			Remover termo <span class="glyphicon glyphicon-remove"></span>
+		</a>
+	  </div>
+	</div>
+
+	{% if messages %}
+		{% for message in messages %}
+		<div {% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>
+	        <a href="#" class="close" data-dismiss="alert">&times;</a>
+		    <p>{{ message }}</p>
+	    </div>
+	    {% endfor %}
+	{% endif %}
+
+	<div class="panel panel-default">
+        <div class="panel-heading">
+        	DETALHES DO TERMO <strong>{{termolx.termo|upper}}</strong> (<strong>{{termolx.linguax|upper}}</strong>)
+        </div>
+        {% if perms.maistermos.add_certificado %}
+	    	{% if termolx.estado == 'Em certificacao' or termolx.estado == 'Proposto' %}
+        <div class="panel-body">
+        	<div>
+		    	<a type="button" class="btn btn-sm btn-success pull-left" data-parent="#forms" data-toggle="collapse" data-target="#form_certificado" value="Toggle Button" style="margin-left:5px">
+					Certificar termo <span class="glyphicon glyphicon-ok"></span>
+				</a>
+				<a type="button" class="btn btn-sm btn-danger pull-left" data-parent="#forms" data-toggle="collapse" data-target="#form_rejeicao" value="Toggle Button" style="margin-left:5px">
+					Negar certificado <span class="glyphicon glyphicon-remove"></span>
+				</a>
+			</div><br/><br/>
+		</div>
+		<div class="panel-group" id="forms">
+		  	<div id="form_certificado" class="panel-collapse panel-success collapse">
+				<div class="panel-heading">
+		    		<h3 class="panel-title">
+						EMISSÃO DO CERTIFICADO DO TERMO <strong>{{ termolx.termo|upper }}</strong> NA LINGUA <strong>{{ termolx.linguax|upper }}</strong> 
+		    		</h3>
+		  		</div>
+				<div class="panel-body">
+					<form method="POST" action="{% url 'certificar_termo' termolx.id %}" class="horizontal" >
+					{%csrf_token%}
+					<table>
+						{% for field in certificado_form %}
+						<tr>
+							<div class="form-group">
+								</br>
+								<label class="col-md-2 control-label">
+									{{field.label_tag}}
+								</label>
+								<div class="col-md-9">
+									{{field|addcss:"form-control"}}
+				                </div>
+				            	</br>
+							</div>
+						</tr>	
+						{%endfor%}
+						<tr>
+						<div class="form-group">
+				            <div class="col-xs-offset-3 col-xs-9">
+				                <label class="checkbox-inline">
+				                    <input class="hide"></a>.
+				                </label>
+				            </div>
+				        </div>
+				        </tr>
+				        <tr>
+					        <div class="form-group">
+					            <div class="col-xs-offset-3 col-xs-9">
+			                		<input type="submit" class="btn btn-success" value="Emitir certificado">
+				                	<input type="reset" class="btn btn-default" value="Reset">
+					            </div>
+			        		</div>
+					    </tr>
+				    </table>
+					</form>	
+				</div>
+			</div>
+
+			<div id="form_rejeicao" class="panel-collapse panel-danger collapse">
+				<div class="panel-heading">
+		    		<h3 class="panel-title">
+						JUSTIFICAR A NÃO CERTIFICAÇÃO DO TERMO <strong>{{ termolx.termo|upper }}</strong> NA LINGUA <strong>{{ termolx.linguax|upper }}</strong> 
+		    		</h3>
+		  		</div>
+				<div class="panel-body">
+					<form method="POST" action="{% url 'negar_certificado' termolx.id %}" class="horizontal" >
+					{%csrf_token%}
+					<table>
+						<tr>
+							<div class="form-group">
+								</br>
+								<label class="col-md-2 control-label">
+									Justificativa:
+								</label>
+								<div class="col-md-9">
+									<textarea id="justificativa_nao_certificado" class="form-control" rows="3"></textarea>
+				                </div>
+				            	</br>
+							</div>
+						</tr>	
+						<tr>
+						<div class="form-group">
+				            <div class="col-xs-offset-3 col-xs-9">
+				                <label class="checkbox-inline">
+				                    <input class="hide"></a>.
+				                </label>
+				            </div>
+				        </div>
+				        </tr>
+				        <tr>
+					        <div class="form-group">
+					            <div class="col-xs-offset-3 col-xs-9">
+			                		<input type="submit" class="btn btn-danger" value="Salvar justificativa">
+				                	<input type="reset" class="btn btn-default" value="Reset">
+					            </div>
+			        		</div>
+					    </tr>
+				    </table>
+					</form>	
+				</div>
+			</div>
+		</div>
+			{% endif %}
+			{% endif %}
+        	<table class="table">
+				<tr>
+				    <th>Termo:</th>
+				    <td>{{termolx.termo}}</td>
+			  	</tr>
+			  	<tr>
+				    <th>Justificativa:</th>
+				    <td>{{termolx.justificativa}}</td>
+			  	</tr>
+		  	</table>
+	  		<table class="table">
+			  	<tr>
+				    <th>Usuário cadastrante:</th>
+				    <td>{{termolx.usuario_insere_termolx}}</td>
+
+				    <th>Data de cadastro:</th>
+				    <td>{{termolx.data_insercao|date:"M d, Y"}}</td>
+			  	</tr>
+			  	<tr>
+				    <th>Aprovações:</th>
+				    <td>
+				    	{% if perms.maistermos.add_certificado %}
+				    	{% else %}
+				    	<a type="button" class="btn btn-xs btn-warning pull-left" href="{% url 'aprova_conceito' termolx.id%}"
+				    	data-toggle="tooltip" data-placement="top" title="Gostei! aprovo este termolx">
+							<span class="glyphicon glyphicon-thumbs-up"></span>
+						</a>
+						{% endif %}
+				    	{{termolx.usuario_aprova_termolx.count}}
+				    </td>
+
+				    <th>Rejeições:</th>
+				    <td>
+				    	{% if perms.maistermos.add_certificado %}
+				    	{% else %}
+				    	<a type="button" class="btn btn-xs btn-warning pull-left" href="{% url 'rejeita_conceito' termolx.id %}"
+				    	data-toggle="tooltip" data-placement="top" title="Não gostei, rejeito este termolx" style="margin-left:5px">
+							 <span class="glyphicon glyphicon-thumbs-down"></span>
+						</a>
+						{% endif %}
+				    	{{termolx.usuario_rejeita_termolx.count}}
+				    </td>
+			  	</tr>
+			  	<tr>
+			  		<th>Estado:</th>
+				    <td>{{termolx.estado}}</td>
+
+				    <th></th>
+				    <td>
+				    	<a type="button" class="btn btn-xs btn-info"  data-toggle="collapse" data-target=".toggleDetalhes" value="Toggle Button">
+				    		Informações adicionais <span class="glyphicon glyphicon-chevron-down"></span>
+				    	</a>
+				    </td>
+			  	</tr>			  	
+			</table>
+
+	<div class="panel-group" id="accordion">
+      <div class="panel panel-default collapse toggleDetalhes">
+        <div class="panel-heading ">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">DETALHES DA SOLICITAÇÃO</a>
+          </h4>
+        </div>
+        <div id="collapseOne" class="panel-collapse collapse">
+          <div class="panel-body">
+            <table class="table">
+				<tr>
+				    <th>Termo em português:</th>
+				    <td>{{solicitacao.termoref.termo}}</td>
+				    <th>Lingua solicitada:</th>
+				    <td>{{solicitacao.linguax}}</td>
+			  	</tr>
+			  	<tr>
+			  		<th>Data primeira solicitação:</th>
+				    <td>{{solicitacao.data_insercao|date:"M d, Y"}}</td>
+				    <th>Estado:</th>
+				    <td>{{solicitacao.estado}}</td>
+			  	</tr>	
+			  	<tr>
+				    <th>Usuários Solicitantes:</th>
+				    <td>{{solicitacao.usuario_solicitantes.count}}</td>
+				    <th>Linguistas analisando:</th>
+				    <td>{{solicitacao.usuario_em_analise.count}}</td>
+			  	</tr>  	
+			</table>
+          </div>
+        </div>
+      </div>
+      <div class="panel panel-default collapse toggleDetalhes">
+        <div class="panel-heading">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">SUGESTÕES PARA O NOVO TERMO</a>
+          </h4>
+        </div>
+        <div id="collapseTwo" class="panel-collapse collapse">
+          <div class="panel-body">
+            
+          	{% if sugestao_list_query %}
+			<table class="table">
+				<thead>
+					<tr>
+					    <th>Termo</th>
+					    <th>Usuário cadastrante</th>
+					    <th>Justificativa</th>
+					    <th>Aprova</th>
+					    <th>Rejeita</th>
+				  	</tr>
+			   	</thead>
+			   	<tbody>
+			  		{% for sugestao in sugestao_list_query %}
+			  		<tr>
+			  			<td> {{sugestao.termo}} </td>
+					    <td> {{sugestao.usuario_insere_sugestao.username}} </td>
+					    <td> {{sugestao.justificativa}} </td>
+					    <td> {{sugestao.usuario_aprova_sugestao.count}} </td>
+					    <td> {{sugestao.usuario_rejeita_sugestao.count}} </td>
+				  	</tr>
+			  		{% endfor %} 
+		  		</tbody>
+			</table>
+				<!-- PAGINAÇÃO -->
+			    <ul class="pagination">
+			    {% if sugestao_list_query.has_previous %}
+			        <li><a href="?page={{ sugestao_list_query.previous_page_number }}{{ getvars }}{{ hashtag }}" class="prev">&lsaquo;&lsaquo;</a></li>
+			    {% else %}
+			        <li class="disabled prev"><a href="#">&lsaquo;&lsaquo;</a></li>
+			    {% endif %}
+
+			    {% for i in paginator_sugestao.page_range %}
+		            <li {% if sugestao_list_query.number == i %} class="active" {% endif %}><a href="?page={{i}}">{{i}}</a></li>
+		        {% endfor %}
+
+			    {% if sugestao_list_query.has_next %}
+			        <li><a href="?page={{ sugestao_list_query.next_page_number }}{{ getvars }}{{ hashtag }}" class="next">&rsaquo;&rsaquo;</a></li>
+			    {% else %}
+			        <li class="disabled next"><a href="#">&rsaquo;&rsaquo;</a></li>
+			    {% endif %}
+			    </ul>
+			{% else %}
+		  		<p> Não existem sugestões para a criação do termo </p>
+	  		{% endif %}
+
+          </div>
+        </div>
+      </div>
+      <div class="panel panel-default collapse toggleDetalhes">
+        <div class="panel-heading">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">CONCEITOS</a>
+          </h4>
+        </div>
+        <div id="collapseThree" class="panel-collapse collapse">
+          <div class="panel-body">
+            {% if conceitos_list_query %}
+			<table class="table">
+				<thead>
+					<tr>
+					    <th>Lingua</th>
+					    <th>Usuário cadastrante</th>
+					    <th>Conceito</th>
+					    <th>Aprova</th>
+					    <th>Rejeita</th>
+				  	</tr>
+			   	</thead>
+			   	<tbody>
+			  		{% for conceito in conceitos_list_query %}
+			  		<tr>
+					    <td> {{conceito.linguax}} </td>
+					    <td> {{conceito.usuario_insere_conceito.username}} </td>
+					    <td> {{conceito.conceito}} </td>
+					    <td> {{conceito.usuario_aprova_conceito.count}} </td>
+					    <td> {{conceito.usuario_rejeita_conceito.count}} </td>
+				  	</tr>
+			  		{% endfor %} 
+		  		</tbody>
+			</table>
+				<!-- PAGINAÇÃO -->
+			    <ul class="pagination">
+			    {% if conceitos_list_query.has_previous %}
+			        <li><a href="?page={{ conceitos_list_query.previous_page_number }}{{ getvars }}{{ hashtag }}" class="prev">&lsaquo;&lsaquo;</a></li>
+			    {% else %}
+			        <li class="disabled prev"><a href="#">&lsaquo;&lsaquo;</a></li>
+			    {% endif %}
+
+			    {% for i in paginator_conceitos.page_range %}
+		            <li {% if conceitos_list_query.number == i %} class="active" {% endif %}><a href="?page={{i}}">{{i}}</a></li>
+		        {% endfor %}
+
+			    {% if conceitos_list_query.has_next %}
+			        <li><a href="?page={{ conceitos_list_query.next_page_number }}{{ getvars }}{{ hashtag }}" class="next">&rsaquo;&rsaquo;</a></li>
+			    {% else %}
+			        <li class="disabled next"><a href="#">&rsaquo;&rsaquo;</a></li>
+			    {% endif %}
+			    </ul>
+			{% else %}
+		  		<p> Não existem conceitos associados ao termo </p>
+	  		{% endif %}
+          </div>
+        </div>
+      </div>
+
+		    </div>
+
+{% endblock %}

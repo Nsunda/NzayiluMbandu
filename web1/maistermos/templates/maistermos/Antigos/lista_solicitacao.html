@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block selectNavbar %}
+	<li><a href="{% url 'default' %}">Início</a></li>
+	<li><a href="/dicionario/">Dicionario</a></li>
+	<li class="active"><a href="/maistermos/">+Termos</a></li>
+	<li><a href="/ensino/">Ensino</a></li>
+{% endblock %}
+
+{% block slectSidebar %}
+  <li class="active"><a href="{% url 'lista_solicitacao' %}">Solicitações</a></li>
+  <li><a href=" url lista_termo">Propostas</a></li>
+  <li><a href=" url lista_certificacao">Certificados</a></li>
+{% endblock %}
+
+{% block ContentPlaceHolder %}
+
+
+<nav class="navbar navbar-default" role="navigation">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li>
+        	<button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown" style="width:180px; margin-top:8px; margin-right:10px; height:33px;">
+        		Selecione o filtro <span class="caret"></span>
+		    </button>
+		    <ul class="dropdown-menu">
+	            <li><a href="#">Termos português</a></li>
+	            <li><a href="#">Solicitante</a></li>
+	            <li><a href="#">Data solicitação</a></li>
+	            <li><a href="#">Estado</a></li>
+	        </ul>
+        </li>
+        <li>
+        	<button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown" style="width:180px; margin-top:8px; height:33px;">
+        		Selecione a fonte <span class="caret"></span>
+		    </button>
+		    <ul class="dropdown-menu">
+	            <li><a href="#">Todas as solicitações</a></li>
+	            <li><a href="#">Minhas solicitações</a></li>
+	        </ul>
+        </li>
+        <form class="navbar-form navbar-right" role="form">
+            <div class="form-group">
+              <input type="text" placeholder="Buscar" class="form-control" style="width:220px">
+            </div>
+            <button type="submit" class="btn btn-default btn-sm" style="height:33px;">
+            	<span class="glyphicon glyphicon-search"></span>
+            </button>
+        </form>	
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+	
+
+
+	<table class="table">
+		<tr>
+		    <th>Termo Português</th>
+		    <th>Solicitante</th>
+		    <th>Data Solicitação</th>
+		    <th>Estado</th>
+		    <th></th>
+	  	</tr>
+
+  		{% for solicitacao in lista_solicitacao %}
+  		<tr>
+		    <td> {{ solicitacao.termopt }} </td>
+		    <td> {{ solicitacao.solicitante }} </td>
+		    <td> {{ solicitacao.data_solicita }} </td>
+		    <td> {{ solicitacao.estado }} </td>
+		    <td><!-- detalhes: Aparece para todos os perfis professores, linguistas e certificadores -->
+		    	<a type="button" class="btn btn-xs btn-info" href="{% url 'detalhe_solicitacao' solicitacao.id %}" 
+		    	data-toggle="tooltip" data-placement="top" title="Detalhes">
+                    <span class="glyphicon glyphicon-th-list"></span>
+	            </a>
+				<!-- editar: Aparece só para o solicitante -->
+		    	<a type="button" class="btn btn-xs btn-primary" href="{% url 'editar_solicitacao' solicitacao.id %}"
+		    	data-toggle="tooltip" data-placement="top" title="Editar">
+					<span class="glyphicon glyphicon-pencil"></span>
+				</a>
+				<!-- propor: Aparece só para linguistas -->
+		    	<a type="button" class="btn btn-xs btn-success" href=" url 'criar_termo' solicitacao.id"
+		    	data-toggle="tooltip" data-placement="top" title="Propor termo">
+					<span class="glyphicon glyphicon-plus-sign"></span>
+				</a>
+		    </td>
+	  	</tr>
+  		{% endfor %} 
+
+	</table>
+
+{% endblock %}

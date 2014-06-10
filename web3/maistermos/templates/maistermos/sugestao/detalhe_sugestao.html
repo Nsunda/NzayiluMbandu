@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block slectSidebar %}
+	<div class="panel panel-default">
+		<a href="{% url 'lista_termopt' %}" class="list-group-item active" >
+		  <span class="glyphicon glyphicon-cog"></span> Termos em Português
+		</a>
+		<a href="{% url 'lista_solicitacao' %}" class="list-group-item active" >
+		  <span class="glyphicon glyphicon-cog"></span> Solicitações
+		</a>
+		<a href="{% url 'lista_termolx' %}" class="list-group-item" >
+		  <span class="glyphicon glyphicon-cog"></span> Termos nas Ling. Nacionais
+		</a>
+		<a href="{% url 'lista_certificado' %}" class="list-group-item" >
+		  <span class="glyphicon glyphicon-cog"></span> Certificações
+		</a>
+	</div>
+{% endblock %}
+
+{% block ContentPlaceHolder %}
+
+		<!-- Menu ações dentro do modulo -->
+		<div class="btn-group btn-group-centered" style="margin-bottom:6px">
+		  <div class="btn-group">
+		    <a type="button" class="btn btn-md btn-default" href="{% url 'detalhe_solicitacao' sugestao.solicitacao.id %}" 
+	    	data-toggle="tooltip" data-placement="top" title="Voltar para detalhes solicitação">
+	            Voltar para detalhe da solicitação <span class="glyphicon glyphicon-th-list"></span>
+	        </a>
+		  </div>
+		  {% if sugestao.usuario_insere_sugestao.username == user.username %}
+		  <div class="btn-group">
+		    <a type="button" class="btn btn-md btn-default" href="{% url 'edita_sugestao' sugestao.id %}"
+	    	data-toggle="tooltip" data-placement="top" title="Editar">
+				Editar sugestão <span class="glyphicon glyphicon-pencil"></span>
+			</a>
+		  </div>
+		  <div class="btn-group">
+		    <a type="button" class="btn btn-md btn-default" href="{% url 'remove_sugestao' sugestao.id %}"
+	    	data-toggle="tooltip" data-placement="top" title="Remover">
+				Remover sugestão <span class="glyphicon glyphicon-remove"></span>
+			</a>
+		  </div>	
+		  {% endif %}  
+		</div>
+
+	{% if messages %}
+		{% for message in messages %}
+		<div {% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>
+	        <a href="#" class="close" data-dismiss="alert">&times;</a>
+		    <p>{{ message }}</p>
+	    </div>
+	    {% endfor %}
+	{% endif %}
+
+	<div class="panel panel-default">
+        <div class="panel-heading">
+        	DETALHES DA SUGESTÃO PARA NOVO TERMO <strong> {{sugestao.solicitacao.termoref.termo|upper}}</strong> NA LINGUA <strong>{{sugestao.solicitacao.linguax|upper}}</strong>
+        </div>
+        <div class="panel-body">
+			<table class="table">
+				<tr>
+				    <th>Termo sugerido:</th>
+				    <td>{{sugestao.termo}}</td>
+			  	</tr>
+			  	<tr>
+				    <th>Justificativa:</th>
+				    <td>{{sugestao.justificativa}}</td>
+			  	</tr>
+		  	</table>
+	  		<table class="table">
+			  	<tr>
+				    <th>Usuário cadastrante:</th>
+				    <td>{{sugestao.usuario_insere_sugestao}}</td>
+
+				    <th>Data de cadastro:</th>
+				    <td>{{sugestao.data_insercao|date:"M d, Y"}}</td>
+			  	</tr>
+			  	<tr>
+				    <th>Aprovações:</th>
+				    <td>
+				    	<a id="but_apr_sug{{sugestao.id}}" type="button" data-conid="{{sugestao.id}}" class="btn btn-xs btn-warning aprova_sugestao" data-toggle="tooltip" data-placement="top" title="Gostei! aprovo esta sugestão">
+						<span class="glyphicon glyphicon-thumbs-up"></span>
+						</a>
+				    	<b id="cont_apr_sug{{sugestao.id}}">
+				    		{{sugestao.usuario_aprova_sugestao.count}}
+				    	</b>
+				    </td>
+
+				    <th>Rejeições:</th>
+				    <td>
+				    	<a id="but_rej_sug{{sugestao.id}}" type="button" data-conid="{{sugestao.id}}" class="btn btn-xs btn-warning rejeita_sugestao" data-toggle="tooltip" data-placement="top" title="Não Gostei, rejeito esta sugestão">
+						<span class="glyphicon glyphicon-thumbs-down"></span>
+						</a>
+				    	<b id="cont_rej_sug{{sugestao.id}}">
+				    		{{sugestao.usuario_rejeita_sugestao.count}} 
+				    	</b>
+				    </td>
+			  	</tr>			  	
+			</table>
+        </div>
+    </div>
+
+{% endblock %}

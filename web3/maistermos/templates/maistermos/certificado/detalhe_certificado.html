@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block slectSidebar %}
+	<div class="panel panel-default">
+		<a href="{% url 'lista_termopt' %}" class="list-group-item " >
+		  <span class="glyphicon glyphicon-cog"></span> Termos em Português
+		</a>
+		<a href="{% url 'lista_solicitacao' %}" class="list-group-item" >
+		  <span class="glyphicon glyphicon-cog"></span> Solicitações
+		</a>
+		<a href="{% url 'lista_termolx' %}" class="list-group-item" >
+		  <span class="glyphicon glyphicon-cog"></span> Termos nas Ling. Nacionais
+		</a>
+		<a href="{% url 'lista_certificado' %}" class="list-group-item active" >
+		  <span class="glyphicon glyphicon-cog"></span> Certificações
+		</a>
+	</div>
+{% endblock %}
+
+{% block ContentPlaceHolder %}
+
+		<!-- Menu ações dentro do modulo -->
+
+	<div class="btn-group btn-group-centered" style="margin-bottom:6px">
+	  <div class="btn-group">
+	    <a type="button" class="btn btn-md btn-default" href="{% url 'lista_certificado' %}" 
+    	data-toggle="tooltip" data-placement="top" title="Detalhes">
+            Voltar para a lista <span class="glyphicon glyphicon-list"></span>
+        </a>
+	  </div>
+	  <div class="btn-group">
+	    <a type="button" class="btn btn-md btn-default" href="{% url 'edita_certificado' certificado.id %}"
+    	data-toggle="tooltip" data-placement="top" title="Editar">
+			Editar os detalhes <span class="glyphicon glyphicon-pencil"></span>
+		</a>
+	  </div>
+	</div>
+
+	{% if messages %}
+		{% for message in messages %}
+		<div {% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>
+	        <a href="#" class="close" data-dismiss="alert">&times;</a>
+		    <p>{{ message }}</p>
+	    </div>
+	    {% endfor %}
+	{% endif %}
+
+	<div class="panel panel-default">
+        <div class="panel-heading">
+        	DETALHES DO CERTIFICADO DO TERMO <strong>{{certificado.termolx.termo|upper}}</strong> (<strong>{{certificado.termolx.linguax|upper}}</strong>)
+        </div>
+        <div class="panel-body">
+        	<!-- propor: Aparece só para -->
+        	<table class="table">
+				<tr>
+				    <th>Termo:</th>
+				    <td>{{certificado.termolx.termo}}</td>
+			  	</tr>
+			  	<tr>
+				    <th>Justificativa:</th>
+				    <td>{{certificado.corpo_certificado}}</td>
+			  	</tr>
+		  	</table>
+	  		<table class="table">
+			  	<tr>
+			  		<th>Orgão:</th>
+				    <td>{{certificado.agencia_certificadora}}</td>
+
+				    <th>Usuário certificador:</th>
+				    <td>{{certificado.usuario_insere_certificado}}</td>
+
+				    <th>Data de certificação:</th>
+				    <td>{{certificado.data_insercao|date:"M d, Y"}}</td>
+			  	</tr>
+			  	
+			</table>
+			
+
+		    </div>
+
+{% endblock %}

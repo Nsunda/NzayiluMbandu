@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% load widget_tweaks %}
+{% load staticfiles %}
+{% load extra_order %}
+
+{% block selectNavbar %}
+	<li><a href="">Início</a></li>
+	<li><a href="/dicionario/">Dicionario</a></li>
+	<li class="active"><a href="/maistermos/">+Termos</a></li>
+	<li><a href="/ensino/">Ensino</a></li>
+{% endblock %}
+
+{% block slectSidebar %}
+
+	<div class="panel panel-default">
+		{% if perms.maistermos %}
+	    <a href="{% url 'cadastra_termopt' %}" class="list-group-item active" >
+		  <span class="glyphicon glyphicon-plus"></span> Cadastrar termos PT
+		</a>
+		<a href="{% url 'cria_solicitacao' %}" class="list-group-item" >
+		  <span class="glyphicon glyphicon-bookmark"></span> Solicitar criação termos LN
+		</a>
+		<a href="{% url 'lista_termopt' %}" class="list-group-item" >
+		  <span class="glyphicon glyphicon-cog"></span> Gerir termos PT
+		</a>
+		<a href="{% url 'lista_solicitacao' %}" class="list-group-item" >
+		  <span class="glyphicon glyphicon-cog"></span> Gerir solicitações
+		</a>
+		<a href="{% url 'lista_termolx' %}" class="list-group-item" >
+		  <span class="glyphicon glyphicon-cog"></span> Gerir termos LN
+		</a>
+		<a href="{% url 'lista_certificado' %}" class="list-group-item" >
+		  <span class="glyphicon glyphicon-cog"></span> Gerir certificados
+		</a>
+		{% endif %}
+	</div>
+
+{% endblock %}
+
+{% block ContentPlaceHolder %}
+
+			<!-- Menu ações dentro do modulo -->
+		<div class="btn-group btn-group-centered" style="margin-bottom:6px">
+		  <div class="btn-group">
+		  	{% if termopt != None %}
+		    <a type="button" class="btn btn-md btn-default" href="{% url 'detalhe_termopt' termopt.id %}" 
+	    	data-toggle="tooltip" data-placement="top" title="Detalhes">
+	            Voltar para detalhes <span class="glyphicon glyphicon-list"></span>
+	        </a>
+	        {% endif %}
+		  </div>
+		  {% if termopt_form.instance.pk != None %}
+		  <div class="btn-group">
+		    <a type="button" class="btn btn-md btn-default" href="{% url 'remove_termopt' termopt.id %}"
+		    	data-toggle="tooltip" data-placement="top" title="Remover">
+					Remover termo <span class="glyphicon glyphicon-remove"></span>
+				</a>
+		  </div>
+		  {% endif %}
+		</div>
+
+	{% if messages %}
+		{% for message in messages %}
+		<div {% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>
+	        <a href="#" class="close" data-dismiss="alert">&times;</a>
+		    <p>{{ message }}</p>
+	    </div>
+	    {% endfor %}
+	{% endif %}
+
+	<div class="panel panel-default">
+		<div class="panel-heading">
+    		<h3 class="panel-title">
+    			{% if termopt_form.instance.pk == None %}
+    				CADASTRO
+				{% else %}
+					EDIÇÃO
+				{% endif %}
+    				DE TERMOS EM PORTUGUÊS
+    		</h3>
+  		</div>
+		<div class="panel-body">
+			<form method="POST" action="" class="horizontal" >
+			{%csrf_token%}
+			<table>
+				{% for field in termopt_form %}
+				<tr>
+					<div class="form-group">
+						</br>
+						<label class="col-md-2 control-label">
+							{{field.label_tag}}
+						</label>
+						<div class="col-md-9">
+							{{field|addcss:"form-control"}}
+		                </div>
+		            	</br>
+					</div>
+				</tr>	
+				{%endfor%}
+				<tr>
+				<div class="form-group">
+		            <div class="col-xs-offset-3 col-xs-9">
+		                <label class="checkbox-inline">
+		                    <input class="hide"></a>.
+		                </label>
+		            </div>
+		        </div>
+		        </tr>
+		        <tr>
+			        <div class="form-group">
+			            <div class="col-xs-offset-3 col-xs-9">
+		                	{% if termopt_form.instance.pk == None %}
+		                		<input type="submit" class="btn btn-primary" value="Cadastrar">
+			                	<input type="reset" class="btn btn-default" value="Reset">
+							{% else %}
+								<input type="submit" class="btn btn-primary" value="Editar">
+							{% endif %}
+			            </div>
+	        		</div>
+			    </tr>
+		    </table>
+			</form>	
+		</div>
+	</div>
+{% endblock %}
+

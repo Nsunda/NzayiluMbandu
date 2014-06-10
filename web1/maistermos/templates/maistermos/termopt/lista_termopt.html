@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block selectNavbar %}
+	<li><a href="{% url 'default' %}">Início</a></li>
+	<li><a href="/dicionario/">Dicionario</a></li>
+	<li class="active"><a href="/maistermos/">+Termos</a></li>
+	<li><a href="/ensino/">Ensino</a></li>
+{% endblock %}
+
+{% block slectSidebar %}
+  <li class="active"><a href="">Solicitações</a></li>
+  <li><a href=" url lista_termo">Propostas</a></li>
+  <li><a href=" url lista_certificacao">Certificados</a></li>
+{% endblock %}
+
+{% block ContentPlaceHolder %}
+	
+	<!-- Barra de busca -->
+	<div class="well well-sm">
+		<form method="POST" action="/maistermos/termopt/lista/" class="horizontal" >
+			{%csrf_token%}
+
+				<div class="input-group">
+					<input name="q" type="text" placeholder="Buscar" class="form-control">
+					<div class="input-group-btn">
+			        	<button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown" style="height:34px; width:160px">
+				    		Selecione o filtro <span class="caret"></span>
+					    </button>
+					    <ul class="dropdown-menu">
+				            <li><a href="#">Termos português</a></li>
+				            <li><a href="#">Solicitante</a></li>
+				            <li><a href="#">Data solicitação</a></li>
+				            <li><a href="#">Estado</a></li>
+				        </ul>
+					    <button type="submit" class="btn btn-default btn-sm" style="height:34px;">
+							<span class="glyphicon glyphicon-search"></span>
+						</button>
+				  	</div>
+				</div>
+
+		</fomr>
+	</div>
+
+	{% if messages %}
+		<div class="alert alert-info alert-info">
+	        <a href="#" class="close" data-dismiss="alert">&times;</a>
+	        <strong>Mensagem!</strong> 
+	        <ul class="messages">
+			    {% for message in messages %}
+			    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+			    {% endfor %}
+			</ul>
+	    </div>
+	{% endif %}
+
+	<div class="panel panel-default">
+        <div class="panel-heading">
+        	{{titulo_lista}}
+        </div>
+        <div class="panel-body">
+			<table class="table">
+				<thead>
+					<tr>
+					    <th>Termo</th>
+					    <th>Usuário cadastrante</th>
+					    <th>Data cadastro</th>
+					    <th></th>
+				  	</tr>
+			   	</thead>
+			   	<tbody>
+			  		{% for termopt in termospt_list %}
+			  		<tr>
+					    <td> {{termopt.termo}} </td>
+					    <td> {{termopt.usuario_insere_termopt.username}} </td>
+					    <td> {{termopt.data_insercao}} </td>
+
+					    <td><!-- detalhes: Aparece para todos os perfis professores, linguistas e certificadores -->
+					    	<a type="button" class="btn btn-xs btn-info" href="{% url 'detalhe_termopt' termopt.id %}" 
+					    	data-toggle="tooltip" data-placement="top" title="Detalhes">
+			                    <span class="glyphicon glyphicon-th-list"></span>
+				            </a>
+							<!-- editar: Aparece só para o solicitante -->
+					    	<a type="button" class="btn btn-xs btn-primary" href=""
+					    	data-toggle="tooltip" data-placement="top" title="Editar">
+								<span class="glyphicon glyphicon-pencil"></span>
+							</a>
+							<!-- propor: Aparece só para linguistas -->
+					    	<a type="button" class="btn btn-xs btn-danger" href=" url 'criar_termo' solicitacao.id"
+					    	data-toggle="tooltip" data-placement="top" title="Remover">
+								<span class="glyphicon glyphicon-remove"></span>
+							</a>
+							<!-- propor: Aparece só para linguistas -->
+					    	<a type="button" class="btn btn-xs btn-success" href=" url 'criar_termo' solicitacao.id"
+					    	data-toggle="tooltip" data-placement="top" title="Solicitar criação de termo nas LN">
+								<span class="glyphicon glyphicon-plus-sign"></span>
+							</a>
+					    </td>
+				  	</tr>
+			  		{% endfor %} 
+		  		</tbody>
+			</table>
+        </div>
+    </div>
+
+{% endblock %}
