@@ -65,7 +65,7 @@
 	    	{% if termolx.estado == 'Em certificacao' or termolx.estado == 'Proposto' %}
         <div class="panel-body">
         	<div>
-		    	<a type="button" class="btn btn-sm btn-success pull-left" data-parent="#forms" data-toggle="collapse" data-target="#form_certificado" value="Toggle Button" style="margin-left:5px">
+		    	<a type="button" class="btn btn-sm btn-success pull-left" data-parent="#forms" data-toggle="collapse" data-target="#certificado_form" value="Toggle Button" style="margin-left:5px">
 					Certificar termo <span class="glyphicon glyphicon-ok"></span>
 				</a>
 				<a type="button" class="btn btn-sm btn-danger pull-left" data-parent="#forms" data-toggle="collapse" data-target="#form_rejeicao" value="Toggle Button" style="margin-left:5px">
@@ -74,7 +74,7 @@
 			</div><br/><br/>
 		</div>
 		<div class="panel-group" id="forms">
-		  	<div id="form_certificado" class="panel-collapse panel-success collapse">
+		  	<div id="certificado_form" class="panel-collapse panel-success collapse">
 				<div class="panel-heading">
 		    		<h3 class="panel-title">
 						EMISSÃO DO CERTIFICADO DO TERMO <strong>{{ termolx.termo|upper }}</strong> NA LINGUA <strong>{{ termolx.linguax|upper }}</strong> 

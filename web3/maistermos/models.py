@@ -6,15 +6,19 @@ from django.contrib.auth.models import User
 # LINGUAS SUPORTADAS PELO SISTEMA
 LINGUA = (
 	('Kikongo', 'Kikongo'),
-	('Kibundo', 'Kibundo'),
-	('Espanhol', 'Espanhol'),
+	('Kimbundo', 'Kimbundo'),
+	('Ombundu', 'Ombundu'),
+	('Nganguela', 'Nganguela'),
+	('Cokwe', 'Cokwe'),
 )
 
 LINGUA_CONCEITO = (
 	('Portugues', 'Portugues'),
 	('Kikongo', 'Kikongo'),
-	('Kibundo', 'Kibundo'),
-	('Espanhol', 'Espanhol'),
+	('Kimbundo', 'Kimbundo'),
+	('Ombundu', 'Ombundu'),
+	('Nganguela', 'Nganguela'),
+	('Cokwe', 'Cokwe'),
 )
 
 # TERMO EM PORTUGUÊS:
@@ -115,12 +119,13 @@ class Sugestao(models.Model):
 
 # CERTIFICADO:
 LISTA_AGENCIAS = (
+		('INL', 'INL'),
 		('MESCT', 'MESCT'),       # Quando o linguista propõe o termo um ou vários linguistas marcou que esta analisando
 		('MC', 'MC'),   # Quando alguma agência certificadora esta em processo de certificação	# Quando o agente certificador já analisou e rejeitou
 	)
 class Certificado(models.Model):
 	termolx = models.ForeignKey(Termolx)
-	agencia_certificadora = models.CharField(max_length=20, choices=LISTA_AGENCIAS,default='MC')
+	agencia_certificadora = models.CharField(max_length=20, choices=LISTA_AGENCIAS,default='INL')
 	corpo_certificado = models.CharField(max_length=500)
 	data_insercao = models.DateTimeField('data_insercao', default=datetime.now())
 	usuario_insere_certificado = models.ForeignKey(User, related_name='usuario_insere_certificado')

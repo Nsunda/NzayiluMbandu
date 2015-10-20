@@ -77,7 +77,7 @@ class TermolxForm(ModelForm):
 		self.fields['termo'].label = 'Novo termo'
 		self.fields['justificativa'].label = 'Justificativa do termo'
 
-#  FORM TERMO NA LINGUA NACIONAL:
+#  FORM CERTIFICADO DO TERMO NA LINGUA NACIONAL:
 class CertificadoForm(ModelForm):
 	class Meta:
 		model = Certificado

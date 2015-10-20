@@ -576,8 +576,8 @@ def cadastra_termolx(request, pk):
 
 # LISTA DE TERMOS NAS LINGUAS NACIONAIS: 
 DROPDOWNLIST_OPCAO_LISTA_TERMO_LINGUAS = (
-	"Todas as linguas",
-	"Kikongo","Kibundo","Espanhol")
+	"Todas as linguas","Português","Kikongo",
+	"Kimbundu","Umbundu","Cokwe","Nganguela")
 @login_required
 def lista_termolx(request):
 	if request.method=='GET':
@@ -669,11 +669,11 @@ def remove_termolx(request, pk):
 def certificar_termo(request, pk):
 	termolx = Termolx.objects.get(id=pk)
 	if request.method=='GET':
-		"""certificado_form = CertificadoForm()
+		certificado_form = CertificadoForm()
 		termolx = Termolx.objects.get(id=pk)
 		
 		context = {'certificado_form': certificado_form, 'termolx':termolx }
-		return render(request, 'maistermos/certificado/cadastra_certificado.html', context)"""
+		return render(request, 'maistermos/certificado/cadastra_certificado.html', context)
 	else:
 		certificado_form = CertificadoForm(request.POST)
 		if certificado_form.is_valid():
@@ -762,7 +762,7 @@ def detalhe_certificado(request, pk):
 		return render(request, 'maistermos/certificado/detalhe_certificado.html', context)	
 
 # EDICÃO DE TERMOS NAS LINGUAS NACIONAIS:
-MENSAGEM_SUCESSO_EDICAO_TERMOLX = 'O termo na lingua nacional foi editado com sucesso'
+MENSAGEM_SUCESSO_EDICAO_TERMOLX = 'O Certificado do termo na lingua nacional foi editado com sucesso'
 @login_required
 def edita_certificado(request, pk):
 	termolx = Termolx.objects.get(id=pk)
